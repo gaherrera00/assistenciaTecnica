@@ -1,3 +1,4 @@
+import Link from "next/link";
 import "./login.css";
 
 export default function Login() {
@@ -9,13 +10,8 @@ export default function Login() {
       <h2>Entrar na Conta</h2>
 
       <form>
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="Endereço de email"
-          required
-        />
+        <label htmlFor="email">Usuário</label>
+        <input type="email" id="email" placeholder="Nome de usuário" required />
 
         <div className="password-wrapper">
           <label htmlFor="senha">Senha</label>
@@ -26,13 +22,15 @@ export default function Login() {
           Entrar
         </button>
 
-        <div className="forgot">Esqueceu sua senha?</div>
+        <Link href="/esqueceuSenha" className="forgot">
+          Esqueceu sua senha?
+        </Link>
 
         <div className="signup-text">Ainda não tem uma conta?</div>
 
-        <button type="button" className="signup-btn">
+        <Link href="/cadastro" className="signup-btn">
           Criar conta
-        </button>
+        </Link>
       </form>
     </div>
   );
