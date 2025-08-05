@@ -1,277 +1,122 @@
+"use client";
 import "./home.css";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const target = document.getElementById(hash.replace("#", ""));
+      if (target) target.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900 p-6 max-w-screen-xl mx-auto">
+      {/* Header */}
       <header className="mb-10 text-center">
-        <h1 className="text-4xl font-bold">Zelus Assistência Técnica</h1>
-        <p className="text-lg mt-2 text-gray-600">
-          Tente resolver antes de abrir um chamado.
+        <h1 className="text-4xl font-bold mb-2">Zelus Assistência Técnica</h1>
+        <p className="text-lg text-gray-700">
+          Soluções rápidas para seus problemas técnicos
         </p>
+        <img
+          src="/logo.png"
+          alt="Zelus Assistência Técnica"
+          className="mx-auto mt-6 w-32 h-32 object-contain drop-shadow-lg"
+        />
       </header>
 
-      {/* Grid com as 3 seções de erros */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {/* Seção Hardware */}
-        <section className="mb-5">
-          <h2 className="text-2xl font-semibold mb-4">
-            🧱 Erros Físicos (Hardware)
+      {/* Navegação rápida */}
+      <nav className="flex justify-center space-x-6 mb-12">
+        <a
+          href="#hardware"
+          className="text-emerald-700 hover:underline font-medium"
+        >
+          Hardware
+        </a>
+        <a
+          href="#windows"
+          className="text-emerald-700 hover:underline font-medium"
+        >
+          Windows
+        </a>
+        <a
+          href="#linux"
+          className="text-emerald-700 hover:underline font-medium"
+        >
+          Linux
+        </a>
+      </nav>
+
+      <div className="space-y-16">
+        {/* Hardware */}
+        <section id="hardware">
+          <h2 className="text-2xl font-semibold mb-6 border-b pb-2 border-emerald-600">
+            Problemas Comuns de Hardware
           </h2>
-          <ol className="list-decimal list-inside space-y-6 text-gray-800">
-            <li>
-              <h3 className="text-xl font-bold">🔌 Computador não liga</h3>
-              <p>
-                <strong>Causa comum:</strong> Fonte de energia com defeito, cabo
-                solto ou queima de hardware.
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white p-5 rounded-xl shadow-md">
+              <h3 className="text-lg font-semibold">Computador não liga</h3>
+              <p className="text-gray-700 mt-2">
+                Verifique se o cabo de energia está conectado corretamente e se
+                a fonte está ligada.
               </p>
-              <p>
-                <strong>Solução:</strong>
+            </div>
+            <div className="bg-white p-5 rounded-xl shadow-md">
+              <h3 className="text-lg font-semibold">Tela preta ao iniciar</h3>
+              <p className="text-gray-700 mt-2">
+                Teste com outro monitor ou cabo. Pode ser problema na GPU ou
+                memória RAM.
               </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Verifique se o cabo de energia está conectado corretamente.
-                </li>
-                <li>Teste outra tomada.</li>
-                <li>
-                  Tente ligar sem periféricos (teclado, mouse, impressora).
-                </li>
-                <li>
-                  Teste a fonte de alimentação (com multímetro ou em outra
-                  máquina).
-                </li>
-              </ul>
-            </li>
-
-            <li>
-              <h3 className="text-xl font-bold">🌡️ Superaquecimento</h3>
-              <p>
-                <strong>Causa comum:</strong> Poeira no cooler, pasta térmica
-                seca, má ventilação.
-              </p>
-              <p>
-                <strong>Solução:</strong>
-              </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Limpe o cooler e as ventoinhas com pincel ou ar comprimido.
-                </li>
-                <li>Troque a pasta térmica do processador a cada 2 anos.</li>
-                <li>
-                  Evite usar o notebook em superfícies que tampem a ventilação.
-                </li>
-              </ul>
-            </li>
-
-            <li>
-              <h3 className="text-xl font-bold">
-                💾 HD/SSD fazendo barulhos ou lento
-              </h3>
-              <p>
-                <strong>Causa comum:</strong> HD com setores defeituosos.
-              </p>
-              <p>
-                <strong>Solução:</strong>
-              </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Windows: Use o chkdsk → <code>chkdsk /f /r</code> no CMD.
-                </li>
-                <li>Ubuntu: Use smartctl (via terminal) para verificar:</li>
-                <pre className="bg-gray-200 rounded p-2 mt-1 text-sm font-mono">
-                  {`sudo apt install smartmontools
-sudo smartctl -a /dev/sdX`}
-                </pre>
-                <li>Faça backup imediato dos arquivos importantes.</li>
-              </ul>
-            </li>
-
-            <li>
-              <h3 className="text-xl font-bold">
-                🔊 Áudio não funciona (problema físico)
-              </h3>
-              <p>
-                <strong>Causa comum:</strong> Conector P2 quebrado ou
-                alto-falante danificado.
-              </p>
-              <p>
-                <strong>Solução:</strong>
-              </p>
-              <ul className="list-disc pl-5">
-                <li>Teste com fones de ouvido.</li>
-                <li>
-                  Verifique se o driver está ok (veja parte de software abaixo).
-                </li>
-                <li>Troque a peça, se necessário (em assistência).</li>
-              </ul>
-            </li>
-          </ol>
+            </div>
+          </div>
         </section>
 
-        {/* Seção Windows */}
-        <section className="mb-5">
-          <h2 className="text-2xl font-semibold mb-4">
-            💻 Erros de Software – Windows
+        {/* Windows */}
+        <section id="windows">
+          <h2 className="text-2xl font-semibold mb-6 border-b pb-2 border-emerald-600">
+            Problemas Comuns no Windows
           </h2>
-          <ol className="list-decimal list-inside space-y-6 text-gray-800">
-            <li>
-              <h3 className="text-xl font-bold">
-                🧼 Lentidão ao iniciar ou travamentos
-              </h3>
-              <p>
-                <strong>Causa comum:</strong> Programas em segundo plano, vírus,
-                disco cheio.
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white p-5 rounded-xl shadow-md">
+              <h3 className="text-lg font-semibold">Windows lento</h3>
+              <p className="text-gray-700 mt-2">
+                Verifique programas iniciando com o sistema, desinstale o que
+                não usa e faça uma limpeza de disco.
               </p>
-              <p>
-                <strong>Solução:</strong>
+            </div>
+            <div className="bg-white p-5 rounded-xl shadow-md">
+              <h3 className="text-lg font-semibold">Atualizações travadas</h3>
+              <p className="text-gray-700 mt-2">
+                Tente reiniciar o computador e execute o solucionador de
+                problemas do Windows Update.
               </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Use Ctrl + Shift + Esc para abrir o Gerenciador de Tarefas e
-                  desabilitar programas na inicialização.
-                </li>
-                <li>
-                  Limpe arquivos com <code>cleanmgr</code> ou{" "}
-                  <code>C:\Windows\Temp</code>.
-                </li>
-                <li>Instale e rode o Malwarebytes para verificar vírus.</li>
-              </ul>
-            </li>
-
-            <li>
-              <h3 className="text-xl font-bold">
-                🧩 Driver de áudio, vídeo ou Wi-Fi não funcionando
-              </h3>
-              <p>
-                <strong>Causa comum:</strong> Driver desatualizado ou
-                incompatível.
-              </p>
-              <p>
-                <strong>Solução:</strong>
-              </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Vá em Gerenciador de Dispositivos, clique com o botão direito
-                  no componente e clique em Atualizar driver.
-                </li>
-                <li>Baixe o driver no site oficial do fabricante.</li>
-              </ul>
-            </li>
-
-            <li>
-              <h3 className="text-xl font-bold">💥 Tela azul (BSOD)</h3>
-              <p>
-                <strong>Causa comum:</strong> Driver mal instalado, falha de
-                RAM, disco ou conflito de hardware.
-              </p>
-              <p>
-                <strong>Solução:</strong>
-              </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Anote o erro (ex: MEMORY_MANAGEMENT, IRQL_NOT_LESS_OR_EQUAL).
-                </li>
-                <li>Use o Windows Memory Diagnostic para testar a RAM.</li>
-                <li>
-                  Rode o <code>sfc /scannow</code> no CMD para corrigir arquivos
-                  corrompidos.
-                </li>
-              </ul>
-            </li>
-          </ol>
+            </div>
+          </div>
         </section>
 
-        {/* Seção Linux */}
-        <section className="mb-5">
-          <h2 className="text-2xl font-semibold mb-4">
-            🐧 Erros de Software – Ubuntu / Linux
+        {/* Linux */}
+        <section id="linux">
+          <h2 className="text-2xl font-semibold mb-6 border-b pb-2 border-emerald-600">
+            Problemas Comuns no Linux
           </h2>
-          <ol className="list-decimal list-inside space-y-6 text-gray-800">
-            <li>
-              <h3 className="text-xl font-bold">
-                📶 Wi-Fi não conecta ou some
-              </h3>
-              <p>
-                <strong>Causa comum:</strong> Driver da placa de rede não
-                reconhecido.
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white p-5 rounded-xl shadow-md">
+              <h3 className="text-lg font-semibold">Sistema não inicializa</h3>
+              <p className="text-gray-700 mt-2">
+                Verifique se o GRUB está configurado corretamente e use um live
+                CD para recuperação.
               </p>
-              <p>
-                <strong>Solução:</strong>
+            </div>
+            <div className="bg-white p-5 rounded-xl shadow-md">
+              <h3 className="text-lg font-semibold">Wi-Fi não conecta</h3>
+              <p className="text-gray-700 mt-2">
+                Certifique-se de que o driver da placa esteja instalado. Tente
+                comandos como `lspci` e `modprobe`.
               </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Descubra o modelo da placa: <code>lspci | grep Network</code>
-                </li>
-                <li>Atualize os drivers:</li>
-              </ul>
-              <pre className="bg-gray-200 rounded p-2 mt-1 text-sm font-mono">
-                {`sudo apt update && sudo apt upgrade
-sudo ubuntu-drivers devices
-sudo ubuntu-drivers autoinstall`}
-              </pre>
-            </li>
-
-            <li>
-              <h3 className="text-xl font-bold">
-                ❌ Erro de “package is broken” ao instalar algo
-              </h3>
-              <p>
-                <strong>Causa comum:</strong> Pacotes quebrados no apt.
-              </p>
-              <p>
-                <strong>Solução:</strong>
-              </p>
-              <pre className="bg-gray-200 rounded p-2 mt-1 text-sm font-mono">
-                {`sudo apt --fix-broken install
-sudo apt update && sudo apt upgrade`}
-              </pre>
-            </li>
-
-            <li>
-              <h3 className="text-xl font-bold">
-                📦 Programa trava ou não abre
-              </h3>
-              <p>
-                <strong>Causa comum:</strong> Incompatibilidade ou ausência de
-                dependência.
-              </p>
-              <p>
-                <strong>Solução:</strong>
-              </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Rode o programa pelo terminal para ver o erro:{" "}
-                  <code>nome-do-programa</code>
-                </li>
-                <li>
-                  Instale dependências que faltam com:{" "}
-                  <code>sudo apt install -f</code>
-                </li>
-              </ul>
-            </li>
-
-            <li>
-              <h3 className="text-xl font-bold">
-                🧱 Sistema travado (congelado)
-              </h3>
-              <p>
-                <strong>Causa comum:</strong> Falta de memória ou bug gráfico.
-              </p>
-              <p>
-                <strong>Solução:</strong>
-              </p>
-              <ul className="list-disc pl-5">
-                <li>
-                  Tente reiniciar a interface: <code>Ctrl + Alt + F2</code> para
-                  entrar no terminal, depois <code>sudo reboot</code>
-                </li>
-                <li>Atualize o sistema:</li>
-              </ul>
-              <pre className="bg-gray-200 rounded p-2 mt-1 text-sm font-mono">
-                {`sudo apt update && sudo apt upgrade`}
-              </pre>
-            </li>
-          </ol>
+            </div>
+          </div>
         </section>
       </div>
     </main>
