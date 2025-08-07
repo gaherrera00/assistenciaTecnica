@@ -60,7 +60,7 @@ export default function SobreNos() {
               <img
                 src="/gabriel.jpg"
                 alt=""
-                className="rounded-full max-w-20 max-h-20"
+                className="rounded-full max-w-25 max-h-25"
               />
               <li className="mt-6 ml-5">
                 <strong>Gabriel</strong> – Especialista em hardware e improvisos
@@ -69,9 +69,9 @@ export default function SobreNos() {
             </div>
             <div className="flex justify-start mt-7 mb-7" >
               <img
-                src="/logo.png"
+                src="/richard.jpg"
                 alt=""
-                className="rounded-full max-w-20 max-h-20"
+                className="rounded-full max-w-25 max-h-25"
               />
               <li className="mt-6 ml-5">
                 <strong>Richard</strong> – Comunicador criativo, transforma
@@ -80,9 +80,9 @@ export default function SobreNos() {
             </div>
             <div className="flex justify-start">
               <img
-                src="/logo.png"
+                src="/gustavo.jpg"
                 alt=""
-                className="rounded-full max-w-20 max-h-20"
+                className="rounded-full max-w-25 max-h-25"
               />
               <li className="mt-6 ml-5">
                 <strong>Gustavo</strong> – Técnico detalhista, viciado em cabos
