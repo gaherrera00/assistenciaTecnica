@@ -10,7 +10,7 @@ const listarChamadosController = async (req, res) => {
         const chamados = await listarChamados();
         res.status(200).json(chamados);
     } catch (err) {
-        console.error('Erro ao obter chamados: ', err);
+        console.error('Erro ao listar chamados: ', err);
         res.status(500).json({ mensagem: 'Erro ao listar chamados. '});
     };
 };
