@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-100 text-gray-900 p-6 max-w-screen-xl mx-auto">
+    <main className="min-h-screen bg-gray-100 text-gray-900 p-6 max-w-screen-[100%] mx-auto">
 
       <div className="space-y-16">
         {/* Hardware */}
