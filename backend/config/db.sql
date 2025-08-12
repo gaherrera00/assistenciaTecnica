@@ -58,12 +58,14 @@ CREATE TABLE tecnico (
 );
 
 CREATE TABLE apontamentos (
-	id_apontamentos INT AUTO_INCREMENT PRIMARY KEY,
-    chamado_id INT NOT NULL,
-    tecnico_id INT NOT NULL,
-    data_inicio DATETIME NOT NULL,
-    data_fim DATETIME NOT NULL,
-    descricao TEXT NOT NULL,
-    FOREIGN KEY (chamado_id) REFERENCES chamados(id_chamados),
-    FOREIGN KEY (tecnico_id) REFERENCES tecnico(id_tecnico)
-);
+        id_apontamentos INT AUTO_INCREMENT PRIMARY KEY,
+        chamado_id INT,
+        tecnico_id INT,
+        descricao TEXT,
+        comeco TIMESTAMP NOT NULL,
+        fim TIMESTAMP NOT NULL,
+        duracao INT AS (TIMESTAMPDIFF(SECOND, comeco, fim)) STORED, -- Calcula a duração em segundos
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (chamado_id) REFERENCES chamados(id),
+        FOREIGN KEY (tecnico_id) REFERENCES usuarios(id)
+    );
