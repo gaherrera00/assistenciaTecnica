@@ -85,6 +85,7 @@ export default function Home() {
               <p className="mt-2 text-sm">{b.desc}</p>
             </div>
           ))}
+          {/*ainnnn gustavo */}
         </div>
       </section>
 
