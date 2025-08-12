@@ -1,6 +1,4 @@
-import jwt from 'jsonwebtoken';
 import { read, compare } from '../config/database.js';
-import { JWT_SECRET } from '../config/jwt.js'; // Importar a chave secreta
 
 const loginController = async (req, res) => {
   const { email, senha } = req.body;

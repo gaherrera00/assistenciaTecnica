@@ -11,7 +11,7 @@ const listarChamados = async () => {
 
 const obterChamadoPorId = async (id) => {
   try {
-    return await read('chamados', `id = ${id}`);
+    return await read('chamados', `id_chamados = ${id}`);
   } catch (error) {
     console.error('Erro ao obter chamado por ID:', error);
     throw error;
@@ -29,7 +29,7 @@ const criarChamado = async (chamadoData) => {
 
 const atualizarChamado = async (id, chamadoData) => {
   try {
-    await update('chamados', chamadoData, `id = ${id}`);
+    await update('chamados', chamadoData, `id_chamados = ${id}`);
   } catch (error) {
     console.error('Erro ao atualizar chamado:', error);
     throw error;
@@ -38,7 +38,7 @@ const atualizarChamado = async (id, chamadoData) => {
 
 const excluirChamado = async (id) => {
   try {
-    await deleteRecord('chamados', `id = ${id}`);
+    await deleteRecord('chamados', `id_chamados = ${id}`);
   } catch (error) {
     console.error('Erro ao excluir chamado:', error);
     throw error;
