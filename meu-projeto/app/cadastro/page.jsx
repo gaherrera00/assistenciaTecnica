@@ -1,6 +1,41 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { gerarCodigo } from "../../utils/gerarCodigo";
 
 export default function Cadastro() {
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [funcao, setFuncao] = useState("");
+  const [codigoVerificacao, setCodigoVerificacao] = useState("");
+  const [mostrarCampoCodigo, setMostrarCampoCodigo] = useState(false);
+  const [erroCodigo, setErroCodigo] = useState("");
+
+  function handleFuncaoChange(e) {
+    const val = e.target.value;
+    setFuncao(val);
+    setMostrarCampoCodigo(val === "tecnico" || val === "gerente");
+    setCodigoVerificacao("");
+    setErroCodigo("");
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (mostrarCampoCodigo) {
+      const codigoEsperado = gerarCodigo(nome, funcao);
+      if (codigoVerificacao !== codigoEsperado) {
+        setErroCodigo("Código de verificação incorreto.");
+        return;
+      }
+    }
+
+    //MANDAR PARA O BANCO DE DADOS
+    alert("Cadastro realizado com sucesso!");
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-sm w-full text-center">
@@ -14,8 +49,7 @@ export default function Cadastro() {
 
         <h2 className="text-2xl font-medium text-gray-800 mb-5">Criar Conta</h2>
 
-        <form className="flex flex-col gap-3">
-          {/* Nome completo */}
+        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <label htmlFor="nome" className="sr-only">
             Nome Completo
           </label>
@@ -24,10 +58,11 @@ export default function Cadastro() {
             id="nome"
             placeholder="Seu nome completo"
             required
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
 
-          {/* E-mail */}
           <label htmlFor="email" className="sr-only">
             E-mail
           </label>
@@ -36,10 +71,11 @@ export default function Cadastro() {
             id="email"
             placeholder="exemplo@email.com"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
 
-          {/* Senha */}
           <label htmlFor="senha" className="sr-only">
             Senha
           </label>
@@ -48,22 +84,52 @@ export default function Cadastro() {
             id="senha"
             placeholder="Crie uma senha"
             required
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
 
-          {/* Função */}
           <label htmlFor="funcao" className="sr-only">
             Função
           </label>
-          <input
-            type="text"
+          <select
             id="funcao"
-            placeholder="Ex: Técnico, Gerente, Cliente"
             required
+            value={funcao}
+            onChange={handleFuncaoChange}
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
-          />
+          >
+            <option value="">Selecione uma função</option>
+            <option value="tecnico">Técnico</option>
+            <option value="gerente">Gerente</option>
+            <option value="cliente">Cliente</option>
+          </select>
 
-          {/* Botão de cadastro */}
+          {mostrarCampoCodigo && (
+            <>
+              <label htmlFor="codigoVerificacao" className="sr-only">
+                Código de Verificação
+              </label>
+              <input
+                type="text"
+                id="codigoVerificacao"
+                placeholder="Código de Verificação"
+                required
+                value={codigoVerificacao}
+                onChange={(e) => {
+                  setCodigoVerificacao(e.target.value);
+                  setErroCodigo("");
+                }}
+                className={`p-3 border rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black ${
+                  erroCodigo ? "border-red-600" : "border-gray-300"
+                }`}
+              />
+              {erroCodigo && (
+                <p className="text-red-600 text-sm mt-1">{erroCodigo}</p>
+              )}
+            </>
+          )}
+
           <button
             type="submit"
             className="p-3 bg-[#084438] text-white border-none rounded-lg text-base cursor-pointer hover:bg-green-800 transition-colors"
