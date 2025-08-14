@@ -27,20 +27,12 @@ const obterChamadoPorIdController = async (req, res) => {
 
 const criarChamadoController = async (req, res) => {
     try {
-        const {titulo, descricao, tipo_id, tecnico_id, usuario_id} = req.body;
-
-        let capaPath = null;
-    
-        if(req.file) {
-            capaPath = req.file.path.replace(__dirname.replace('\\controllers', ''), '');
-        }
+        const {titulo, descricao, tipo_id} = req.body;
     
         const chamadoData = {
             titulo: titulo, 
             descricao: descricao,
             tipo_id: tipo_id,
-            tecnico_id: tecnico_id,
-            usuario_id: usuario_id
         }
     
         const chamadoId = await criarChamado(chamadoData);

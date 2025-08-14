@@ -1,5 +1,46 @@
 import { read, compare } from '../config/database.js';
 
+const cadastro = async (req, res) => {
+  const { email, senha, funcao } = req.body;
+  try {
+    const usuario = await read('usuario', `email = ${email}`);
+
+    if (usuario) {
+      return res.status(404).json({ mensagem: 'Email já cadastrado!' })
+    }
+
+    const verificarFuncao = { aluno, tecnico, gerente};
+
+    if (!verificarFuncao) {
+      return res.status(404).json({ mensagem: 'Esta função não existe.' })
+    }
+
+    const cadastroData = {
+      email: email, 
+      senha: senha,
+      funcao: funcao
+    };
+
+    function validarSenha(senha) {
+      if (senha.lenght <= 6 || senha.lenght >= 8) {
+        return res.status(400).json({ mensagem: 'A senha deve ter no minímo 6 e no maximo 8 caracteres.' });
+      }
+
+      let temNumero = false;
+      const caracteres = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
+      for (let i = 0; i < senha.lenght; i++) {
+        if (!isNaN (senha[i]) && senha[i] != ' ') {
+          temNumero = true;
+          break;
+        }
+      }
+    }
+  } catch (err) {
+
+  }
+}
+
 const loginController = async (req, res) => {
   const { email, senha } = req.body;
 
@@ -15,7 +56,7 @@ const loginController = async (req, res) => {
     const senhaCorreta = await compare(senha, usuario.senha);
 
     if (!senhaCorreta) {
-      return res.status(401).json({ mensagem: 'Senha incorreta' });
+      return res.status(401).json({ mensagem: 'Senha ou email incorreto' });
     }
 
     // Gerar o token JWT
