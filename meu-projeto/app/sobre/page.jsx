@@ -1,9 +1,9 @@
 export default function SobreNos() {
   return (
-    <section className="bg-gray-50 text-gray-800 py-16 px-6 md:px-12">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-4xl font-bold text-center text-green-900 mb-8">
-          Sobre Nós
+    <section className=" mt-15 bg-secondary text-black py-16 px-6 md:px-12">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-4xl md:text-5xl font-bold text-center mb-8">
+          SOBRE <span className="text-primary">NÓS</span>
         </h2>
 
         <p className="text-lg leading-relaxed mb-6">
@@ -44,51 +44,49 @@ export default function SobreNos() {
         </p>
 
         <div className="mt-12">
-          <h3 className="text-2xl font-semibold text-green-800 mb-4">
-            🚀 Missão
-          </h3>
+          <h3 className="text-2xl font-semibold text-primary mb-4">🚀 Missão</h3>
           <p className="text-lg leading-relaxed mb-6">
             Oferecer soluções técnicas acessíveis, ágeis e de confiança, com um
             toque humano e criativo.
           </p>
 
-          <h3 className="text-2xl font-semibold text-green-800 mb-4">
-            👨‍💻 Quem somos
-          </h3>
-          <ul className="text-lg list-none list-inside space-y-2 mb-6">
-            <div className="flex justify-start">
+          <h3 className="text-2xl font-semibold text-primary mb-4">👨‍💻 Quem somos</h3>
+          <ul className="text-lg list-none space-y-6 mb-6 text-white">
+            <li className="flex items-center bg-gradient-to-r from-[#084438] to-green-700 p-4 rounded-lg shadow-lg">
               <img
                 src="/gabriel.jpg"
-                alt=""
-                className="rounded-full max-w-25 max-h-25"
+                alt="Gabriel"
+                className="rounded-full w-20 h-20 object-cover border-2 border-primary"
               />
-              <li className="mt-6 ml-5">
+              <span className="ml-5">
                 <strong>Gabriel</strong> – Especialista em hardware e improvisos
                 (já abriu um PC com uma colher).
-              </li>
-            </div>
-            <div className="flex justify-start mt-7 mb-7" >
+              </span>
+            </li>
+
+            <li className="flex items-center bg-gradient-to-r from-[#084438] to-green-700 p-4 rounded-lg shadow-lg">
               <img
                 src="/richard.jpg"
-                alt=""
-                className="rounded-full max-w-25 max-h-25"
+                alt="Richard"
+                className="rounded-full w-20 h-20 object-cover border-2 border-primary"
               />
-              <li className="mt-6 ml-5">
+              <span className="ml-5">
                 <strong>Richard</strong> – Comunicador criativo, transforma
                 problemas técnicos em linguagem simples (e divertida).
-              </li>
-            </div>
-            <div className="flex justify-start">
+              </span>
+            </li>
+
+            <li className="flex items-center bg-gradient-to-r from-[#084438] to-green-700 p-4 rounded-lg shadow-lg">
               <img
                 src="/gustavo.jpg"
-                alt=""
-                className="rounded-full max-w-25 max-h-25"
+                alt="Gustavo"
+                className="rounded-full w-20 h-20 object-cover border-2 border-primary"
               />
-              <li className="mt-6 ml-5">
+              <span className="ml-5">
                 <strong>Gustavo</strong> – Técnico detalhista, viciado em cabos
-                grandoes, grossos, pretos, organizados e sistemas otimizados.
-              </li>
-            </div>
+                grandes, grossos, pretos, organizados e sistemas otimizados.
+              </span>
+            </li>
           </ul>
 
           <p className="text-lg leading-relaxed">
