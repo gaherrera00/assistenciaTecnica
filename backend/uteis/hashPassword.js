@@ -8,8 +8,7 @@ async function generateHashedPassword(password) {
     // Hashear a senha com o salt
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    console.log('Senha Hasheada:', hashedPassword);
-    process.exit(0); // Encerra o processo após exibir o hash
+    return hashedPassword
   } catch (error) {
     console.error('Erro ao hashear a senha:', error);
     process.exit(1); // Encerra o processo com código de erro

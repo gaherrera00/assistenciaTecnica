@@ -1,18 +1,36 @@
 import { read, compare } from '../config/database.js';
+import { criarCadastro } from '../models/auth.js';
+import jwt from 'jsonwebtoken';
 
 const cadastro = async (req, res) => {
   const { email, senha, funcao } = req.body;
   try {
-    const usuario = await read('usuario', `email = ${email}`);
+    const usuario = await read('usuario', `email = '${email}'`);
 
     if (usuario) {
-      return res.status(404).json({ mensagem: 'Email já cadastrado!' })
+      return res.status(400).json({ mensagem: 'Email já cadastrado!' })
     }
 
-    const verificarFuncao = { aluno, tecnico, gerente};
+    // Validação da senha
+    if (senha.length < 6 || senha.length > 8) {
+      return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
+    }
 
-    if (!verificarFuncao) {
-      return res.status(404).json({ mensagem: 'Esta função não existe.' })
+    let temNumero = false;
+    for (let i = 0; i < senha.length; i++) {
+      if (!isNaN(senha[i]) && senha[i] !== ' ') {
+        temNumero = true;
+        break;
+      }
+    }
+    if (!temNumero) {
+      return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
+    }
+
+    const verificarFuncao = ['aluno', 'tecnico', 'gerente'];
+
+    if (!verificarFuncao.includes(funcao)) {
+      return res.status(400).json({ mensagem: 'Esta função não existe.' })
     }
 
     const cadastroData = {
@@ -21,23 +39,11 @@ const cadastro = async (req, res) => {
       funcao: funcao
     };
 
-    function validarSenha(senha) {
-      if (senha.lenght <= 6 || senha.lenght >= 8) {
-        return res.status(400).json({ mensagem: 'A senha deve ter no minímo 6 e no maximo 8 caracteres.' });
-      }
-
-      let temNumero = false;
-      const caracteres = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-
-      for (let i = 0; i < senha.lenght; i++) {
-        if (!isNaN (senha[i]) && senha[i] != ' ') {
-          temNumero = true;
-          break;
-        }
-      }
-    }
+    const cadastroId = await criarCadastro(cadastroData);         
+    res.status(201).josn({ mensagem: 'Cadastro realizado com sucesso.', cadastroId });
   } catch (err) {
-
+    console.error('Erro ao cadastrar usuario: ', err);
+    res.status(500).json({ mensagem: 'Erro ao cadastrar usuario.' });
   }
 }
 
@@ -60,7 +66,7 @@ const loginController = async (req, res) => {
     }
 
     // Gerar o token JWT
-    const token = jwt.sign({ id: usuario.id, tipo: usuario.tipo }, JWT_SECRET, {
+    const token = jwt.sign({ id: usuario.id_usuario, tipo: usuario.tipo }, JWT_SECRET, {
       expiresIn: '1h',
     });
 
