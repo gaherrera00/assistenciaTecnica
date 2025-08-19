@@ -1,9 +1,11 @@
 import express from 'express';
-import { loginController  } from '../controllers/AuthController.js';
+import { loginController, cadastro } from '../controllers/AuthController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/login', loginController);
+router.post('/login', loginController, authMiddleware);
+router.post('/cadastro', cadastro);
 
 // Rota de Logout
 router.post('/logout', (req, res) => {

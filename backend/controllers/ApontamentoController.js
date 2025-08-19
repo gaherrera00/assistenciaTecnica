@@ -22,11 +22,9 @@ const obterApontamentoPorIdController = async (req, res) => {
 
 const criarApontamentoController = async (req, res) => {
     try {
-        const { chamado_id, tecnico_id, descricao, comeco, fim, duracao, criado_em } = req.body;
+        const { descricao, comeco, fim, duracao, criado_em } = req.body;
 
         const apontamentoData = {
-            chamado_id: chamado_id,
-            tecnico_id: tecnico_id,
             descricao: descricao,
             comeco: comeco,
             fim: fim,
@@ -35,7 +33,7 @@ const criarApontamentoController = async (req, res) => {
         }
 
         const apontamentoId = await criarApontamento(apontamentoData);
-        res.status(201).josn({ mensagem: 'Apontamento criado com sucesso.', apontamentoId});
+        res.status(201).json({ mensagem: 'Apontamento criado com sucesso.', apontamentoId});
     } catch (err) {
         console.error('Erro ao criar apontamentos: ', err);
         res.status(500).json({ mensagem: 'Erro ao criar apontamentos.' });

@@ -5,6 +5,10 @@ const port = 3001;
 
 import authRotas from './routes/authRotas.js';
 import chamadoRotas from './routes/chamadoRotas.js';
+import poolRotas from './routes/poolRotas.js';
+import apontamentoRotas from './routes/apontamentoRotas.js';
+import acompChamadoRotas from './routes/acompChamadoRotas.js';
+import fechamentoRotas from './routes/fechamentoRotas.js';
 
 app.use(cors());
 app.use(express.json());
@@ -15,6 +19,10 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRotas);
 app.use('/chamado', chamadoRotas);
+app.use('/pool', poolRotas);
+app.use('/apontamento', apontamentoRotas);
+app.use('/acompanhamento', acompChamadoRotas);
+app.use('/fechamento', fechamentoRotas);
 
 app.options('/', (req, res) => {
   res.setHeader('Allow', 'GET, OPTIONS');

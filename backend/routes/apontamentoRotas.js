@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarApontamentosController, obterApontamentoPorIdController, criarApontamentoController, atualizarApontamentoController, excluirApontamentoController } from '../controllers/ApontamentoController.js';
+import { listarApontamentosController, obterApontamentoPorIdController, criarApontamentoController, excluirApontamentoController } from '../controllers/ApontamentoController.js';
 
 const router = express.Router();
 

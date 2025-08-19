@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 const cadastro = async (req, res) => {
   const { email, senha, funcao } = req.body;
   try {
-    const usuario = await read('usuario', `email = '${email}'`);
+    const usuario = await read('usuarios', `email = '${email}'`);
 
     if (usuario) {
       return res.status(400).json({ mensagem: 'Email já cadastrado!' })
@@ -38,9 +38,9 @@ const cadastro = async (req, res) => {
       senha: senha,
       funcao: funcao
     };
-
+    
     const cadastroId = await criarCadastro(cadastroData);         
-    res.status(201).josn({ mensagem: 'Cadastro realizado com sucesso.', cadastroId });
+    res.status(201).json({ mensagem: 'Cadastro realizado com sucesso.', cadastroId });
   } catch (err) {
     console.error('Erro ao cadastrar usuario: ', err);
     res.status(500).json({ mensagem: 'Erro ao cadastrar usuario.' });
@@ -77,4 +77,4 @@ const loginController = async (req, res) => {
   }
 };
 
-export { loginController };
+export { loginController, cadastro };

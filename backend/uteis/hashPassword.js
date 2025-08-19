@@ -1,12 +1,12 @@
 import bcrypt from 'bcryptjs';
 
-async function generateHashedPassword(password) {
+async function generateHashedPassword(senha) {
   try {
     // Gerar o salt
     const salt = await bcrypt.genSalt(10);
 
     // Hashear a senha com o salt
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(senha, salt);
 
     return hashedPassword
   } catch (error) {
@@ -15,4 +15,4 @@ async function generateHashedPassword(password) {
   }
 }
 
-generateHashedPassword();
+export { generateHashedPassword };

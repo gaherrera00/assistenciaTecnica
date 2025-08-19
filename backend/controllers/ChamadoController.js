@@ -1,9 +1,4 @@
 import { listarChamados, obterChamadoPorId, criarChamado, atualizarChamado, excluirChamado } from "../models/chamado.js";
-import {fileURLToPath} from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const listarChamadosController = async (req, res) => {
     try {
@@ -27,12 +22,11 @@ const obterChamadoPorIdController = async (req, res) => {
 
 const criarChamadoController = async (req, res) => {
     try {
-        const {titulo, descricao, tipo_id} = req.body;
+        const {titulo, descricao} = req.body;
     
         const chamadoData = {
             titulo: titulo, 
-            descricao: descricao,
-            tipo_id: tipo_id,
+            descricao: descricao
         }
     
         const chamadoId = await criarChamado(chamadoData);
@@ -47,12 +41,7 @@ const atualizarChamadoController = async (req, res) => {
     try {
         const chamadoId = req.params.id;
         const {titulo, descricao, tipo_id, tecnico_id, usuario_id} = req.body;
-        let imagemPath = null;
-        // req requisita algo do servidor e file indica que essa requisição irá possuir um arquivo enviado pelo usuário.
-        if (req.file) {
-            // ele pega o caminho completo do arquivo enviado pelo usuário, le ele e encurta, para facilitar a vida do desenvolvedor.
-            imagemPath = req.file.path.replace(__dirname.replace('\\constrollers', ''), '');
-        }
+        
         // requisição do conteudo enviado pelo criador da noticia
         const chamadoData = {
             titulo: titulo, 
