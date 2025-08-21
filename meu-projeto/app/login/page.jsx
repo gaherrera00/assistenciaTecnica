@@ -18,12 +18,12 @@ export default function Login() {
 
         <form className="flex flex-col gap-3">
           <label htmlFor="email" className="sr-only">
-            Usuário
+            E-Mail
           </label>
           <input
             type="email"
             id="email"
-            placeholder="Nome de usuário"
+            placeholder="E-Mail"
             required
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />

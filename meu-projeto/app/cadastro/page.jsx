@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { gerarCodigo } from "../../utils/gerarCodigo";
 
 export default function Cadastro() {
   const [nome, setNome] = useState("");
