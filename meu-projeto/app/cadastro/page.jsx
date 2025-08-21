@@ -2,34 +2,46 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { gerarCodigo } from "../../utils/gerarCodigo";
+import { gerarRA } from "../../utils/gerarCodigo";
 
 export default function Cadastro() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [funcao, setFuncao] = useState("");
-  const [codigoVerificacao, setCodigoVerificacao] = useState("");
-  const [mostrarCampoCodigo, setMostrarCampoCodigo] = useState(false);
-  const [erroCodigo, setErroCodigo] = useState("");
+  const [ra, setRa] = useState("");
 
   function handleFuncaoChange(e) {
     const val = e.target.value;
     setFuncao(val);
-    setMostrarCampoCodigo(val === "tecnico" || val === "gerente");
-    setCodigoVerificacao("");
-    setErroCodigo("");
+    
+    // Se for cliente, gera o RA automaticamente baseado no email
+    if (val === "cliente" && email) {
+      const raGerado = gerarRA(email);
+      setRa(raGerado);
+    } else {
+      setRa("");
+    }
+  }
+
+  function handleEmailChange(e) {
+    const emailValue = e.target.value;
+    setEmail(emailValue);
+    
+    // Se for cliente e já tiver email, atualiza o RA
+    if (funcao === "cliente" && emailValue) {
+      const raGerado = gerarRA(emailValue);
+      setRa(raGerado);
+    }
   }
 
   function handleSubmit(e) {
     e.preventDefault();
 
-    if (mostrarCampoCodigo) {
-      const codigoEsperado = gerarCodigo(nome, funcao);
-      if (codigoVerificacao !== codigoEsperado) {
-        setErroCodigo("Código de verificação incorreto.");
-        return;
-      }
+    // Se for cliente, gera o RA se ainda não foi gerado
+    if (funcao === "cliente" && !ra && email) {
+      const raGerado = gerarRA(email);
+      setRa(raGerado);
     }
 
     //MANDAR PARA O BANCO DE DADOS
@@ -72,7 +84,7 @@ export default function Cadastro() {
             placeholder="exemplo@email.com"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
 
@@ -105,29 +117,10 @@ export default function Cadastro() {
             <option value="cliente">Cliente</option>
           </select>
 
-          {mostrarCampoCodigo && (
-            <>
-              <label htmlFor="codigoVerificacao" className="sr-only">
-                Código de Verificação
-              </label>
-              <input
-                type="text"
-                id="codigoVerificacao"
-                placeholder="Código de Verificação"
-                required
-                value={codigoVerificacao}
-                onChange={(e) => {
-                  setCodigoVerificacao(e.target.value);
-                  setErroCodigo("");
-                }}
-                className={`p-3 border rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black ${
-                  erroCodigo ? "border-red-600" : "border-gray-300"
-                }`}
-              />
-              {erroCodigo && (
-                <p className="text-red-600 text-sm mt-1">{erroCodigo}</p>
-              )}
-            </>
+          {funcao === "cliente" && ra && (
+            <div className="p-3 bg-gray-100 border border-gray-300 rounded-lg text-sm text-gray-700">
+              <strong>RA Gerado:</strong> {ra}
+            </div>
           )}
 
           <button
