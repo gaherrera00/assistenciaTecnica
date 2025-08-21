@@ -8,7 +8,8 @@ import chamadoRotas from './routes/chamadoRotas.js';
 import poolRotas from './routes/poolRotas.js';
 import apontamentoRotas from './routes/apontamentoRotas.js';
 import acompChamadoRotas from './routes/acompChamadoRotas.js';
-import fechamentoRotas from './routes/fechamentoRotas.js';
+import patrimonioRotas from './routes/patrimonioRotas.js';
+import salaRotas from './routes/salasRotas.js';
 
 app.use(cors());
 app.use(express.json());
@@ -22,7 +23,8 @@ app.use('/chamado', chamadoRotas);
 app.use('/pool', poolRotas);
 app.use('/apontamento', apontamentoRotas);
 app.use('/acompanhamento', acompChamadoRotas);
-app.use('/fechamento', fechamentoRotas);
+app.use('/patrimonio', patrimonioRotas);
+app.use('/sala', salaRotas);
 
 app.options('/', (req, res) => {
   res.setHeader('Allow', 'GET, OPTIONS');

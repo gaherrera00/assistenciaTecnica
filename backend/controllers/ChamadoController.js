@@ -22,12 +22,21 @@ const obterChamadoPorIdController = async (req, res) => {
 
 const criarChamadoController = async (req, res) => {
     try {
-        const {titulo, descricao} = req.body;
-    
+        const { nome, sala, ra, turma, id_maquina, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+
+        // monta o objeto com os dados
         const chamadoData = {
-            titulo: titulo, 
-            descricao: descricao
-        }
+            nome: nome,
+            sala: sala,
+            ra: ra,
+            turma: turma,
+            id_maquina: id_maquina,
+            sintoma: sintoma,
+            detalhes: detalhes,
+            inicio: inicio,
+            frequencia: frequencia,
+            historico: historico
+        };
     
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso.', chamadoId });
@@ -40,16 +49,21 @@ const criarChamadoController = async (req, res) => {
 const atualizarChamadoController = async (req, res) => {
     try {
         const chamadoId = req.params.id;
-        const {titulo, descricao, tipo_id, tecnico_id, usuario_id} = req.body;
-        
-        // requisição do conteudo enviado pelo criador da noticia
+        const { nome, sala, ra, turma, id_maquina, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+
+        // monta o objeto com os dados
         const chamadoData = {
-            titulo: titulo, 
-            descricao: descricao,
-            tipo_id: tipo_id,
-            tecnico_id: tecnico_id,
-            usuario_id: usuario_id
-        }
+            nome: nome,
+            sala: sala,
+            ra: ra,
+            turma: turma,
+            id_patrimonio: id_maquina,
+            sintoma: sintoma,
+            detalhes: detalhes,
+            inicio: inicio,
+            frequencia: frequencia,
+            historico: historico
+        };
 
         await atualizarChamado(chamadoId, chamadoData);
         res.status(201).json({ mensagem: 'Chamado alterado com sucesso.' });

@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarPoolController, obterPoolPorIdController, criarPoolController, atualizarPoolController, excluirPoolController } from '../controllers/poolController.js';
+import { listarPoolController, obterPoolPorIdController, criarPoolController, atualizarPoolController, excluirPoolController } from '../controllers/PoolController.js';
 
 const router = express.Router();
 

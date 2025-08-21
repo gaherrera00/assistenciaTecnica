@@ -39,27 +39,55 @@ CREATE TABLE pool_tecnico (
 -- Criação da tabela `chamados`
 CREATE TABLE chamados (
     id_chamado INT AUTO_INCREMENT PRIMARY KEY,
-	titulo VARCHAR(255) NOT NULL,
-	descricao TEXT NOT NULL,
-	tipo_id INT,
-	tecnico_id INT,
-	usuario_id INT,
-	status ENUM('pendente', 'em andamento', 'concluído') DEFAULT 'pendente',
-	criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	FOREIGN KEY (tipo_id) REFERENCES pool(id_pool),
-	FOREIGN KEY (tecnico_id) REFERENCES usuarios(id_usuario),
-	FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario)
+    
+    -- Dados do usuário
+    nome VARCHAR(255) NOT NULL,
+    sala_id INT NOT NULL,
+    ra VARCHAR(20) NOT NULL,
+    turma VARCHAR(50) NOT NULL,
+    
+    -- Dados do chamado
+    patrimonios_id VARCHAR(100) NOT NULL,
+    sintoma VARCHAR(255) NOT NULL,
+    detalhes TEXT,
+    inicio TIMESTAMP NOT NULL,
+    frequencia VARCHAR(100),
+    historico TEXT,
+    
+    -- Controle de status
+    status ENUM('pendente', 'em andamento', 'concluído') DEFAULT 'pendente',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (patrimonios_id) REFERENCES patrimonios(id_patrimonio),
+    FOREIGN KEY (sala_id) REFERENCES salas(id_sala)
+);
+
+CREATE TABLE salas (
+    id_sala INT AUTO_INCREMENT PRIMARY KEY,
+    nome_sala VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE patrimonios (
+    id_patrimonio VARCHAR(100) NOT NULL PRIMARY KEY,
+    tipo_item ENUM('Computador', 'Mesa', 'Cadeira', 'Impressora', 'Projetor', 'Outros') NOT NULL,
+    sala_id INT NOT NULL,
+    status ENUM('disponível', 'em uso', 'em manutenção') DEFAULT 'disponível',
+    data_aquisicao DATE,
+    observacoes TEXT,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (sala_id) REFERENCES salas(id_sala)
 );
 
 CREATE TABLE apontamentos (
     id_apontamentos INT AUTO_INCREMENT PRIMARY KEY,
-    chamado_id INT,
-    tecnico_id INT,
+    chamado_id INT NOT NULL,
+    tecnico_id INT NOT NULL,
     descricao TEXT,
     comeco TIMESTAMP NOT NULL,
-    fim TIMESTAMP NULL, -- permite ser nulo até que o chamado seja encerrado
-    duracao INT AS (TIMESTAMPDIFF(SECOND, comeco, fim)) STORED, -- Calcula a duração em segundos
+    fim TIMESTAMP NULL,
+    duracao INT AS (TIMESTAMPDIFF(SECOND, comeco, fim)) STORED,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chamado_id) REFERENCES chamados(id_chamado),
     FOREIGN KEY (tecnico_id) REFERENCES usuarios(id_usuario)

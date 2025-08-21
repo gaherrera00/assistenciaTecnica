@@ -22,14 +22,14 @@ const obterPoolPorIdController = async (req, res) => {
 
 const criarPoolController = async (req, res) => {
     try {
-        const { titulo, descricao, criado_em, atualizado_em } = req.body;
+        const { titulo, descricao, created_by, updated_by } = req.body;
     
         const poolData = {
-            titulo: titulo, 
-            descricao: descricao,
-            criado_em: criado_em,
-            atualizado_em: atualizado_em
-        }
+            titulo: titulo ?? null,
+            descricao: descricao ?? null,
+            created_by: created_by ?? null,
+            updated_by: updated_by ?? null
+          };
     
         const poolId = await criarPool(poolData);
         res.status(201).json({ mensagem: 'Pool criado com sucesso.', poolId });
