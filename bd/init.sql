@@ -25,20 +25,28 @@
     );
 
     -- Criação da tabela `chamados`
-    CREATE TABLE chamados (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        titulo VARCHAR(255) NOT NULL,
-        descricao TEXT NOT NULL,
-        tipo_id INT,
-        tecnico_id INT,
-        usuario_id INT,
-        status ENUM('pendente', 'em andamento', 'concluído') DEFAULT 'pendente',
-        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (tipo_id) REFERENCES pool(id),
-        FOREIGN KEY (tecnico_id) REFERENCES usuarios(id),
-        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-    );
+CREATE TABLE chamados (
+    id_chamado INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Dados do usuário
+    nome VARCHAR(255) NOT NULL,
+    sala VARCHAR(50) NOT NULL,
+    ra VARCHAR(20) NOT NULL,
+    turma VARCHAR(50) NOT NULL,
+    
+    -- Dados do chamado
+    id_maquina VARCHAR(100) NOT NULL,
+    sintoma VARCHAR(255) NOT NULL,
+    detalhes TEXT,
+    inicio VARCHAR(100),
+    frequencia VARCHAR(100),
+    historico TEXT,
+    
+    -- Controle de status
+    status ENUM('pendente', 'em andamento', 'concluído') DEFAULT 'pendente',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
     -- Criação da tabela `apontamentos`
     CREATE TABLE apontamentos (

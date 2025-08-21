@@ -54,17 +54,6 @@ export default function Login() {
           >
             Esqueceu sua senha?
           </Link>
-
-          <div className="mt-5 text-sm text-gray-600 tracking-tight">
-            Ainda não tem uma conta?
-          </div>
-
-          <Link
-            href="/cadastro"
-            className="p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm cursor-pointer text-black hover:bg-gray-100 transition-colors inline-block"
-          >
-            Criar conta
-          </Link>
         </form>
       </div>
     </div>

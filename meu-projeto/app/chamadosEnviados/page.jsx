@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 
 export default function TabelaProblemas() {
-  const [problemas, setProblemas] = useState([]);
+  const [chamados, setChamados] = useState([]);
 
   useEffect(() => {
-    fetch("/api/problemas")
+    fetch("/api/chamado")
       .then((res) => res.json())
-      .then((data) => setProblemas(data));
+      .then((data) => setChamados(data))
+      .catch(() => setChamados([]));
   }, []);
 
   const handleAceitarPedido = (id) => {
@@ -46,16 +47,16 @@ export default function TabelaProblemas() {
               </tr>
             </thead>
             <tbody>
-              {problemas.length === 0 ? (
+              {chamados.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-4 text-gray-200">
                     Nenhum chamado disponível
                   </td>
                 </tr>
               ) : (
-                problemas.map((p) => (
+                chamados.map((p) => (
                   <tr
-                    key={p.id}
+                    key={p.id_chamado}
                     className="odd:bg-green-800 even:bg-green-700 hover:bg-green-600 transition-colors"
                   >
                     <td className="px-4 py-2 border border-white/20 break-words">
@@ -76,7 +77,7 @@ export default function TabelaProblemas() {
                     <td className="px-4 py-2 border border-white/20 text-center">
                       <button
                         className="bg-green-600 hover:bg-green-800 text-white px-3 py-1 rounded transition"
-                        onClick={() => handleAceitarPedido(p.id)}
+                        onClick={() => handleAceitarPedido(p.id_chamado)}
                       >
                         ✅
                       </button>
