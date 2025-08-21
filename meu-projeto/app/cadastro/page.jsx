@@ -14,7 +14,7 @@ export default function Cadastro() {
   function handleFuncaoChange(e) {
     const val = e.target.value;
     setFuncao(val);
-    
+
     // Se for cliente, gera o RA automaticamente baseado no email
     if (val === "cliente" && email) {
       const raGerado = gerarRA(email);
@@ -27,7 +27,7 @@ export default function Cadastro() {
   function handleEmailChange(e) {
     const emailValue = e.target.value;
     setEmail(emailValue);
-    
+
     // Se for cliente e já tiver email, atualiza o RA
     if (funcao === "cliente" && emailValue) {
       const raGerado = gerarRA(emailValue);
@@ -129,19 +129,6 @@ export default function Cadastro() {
           >
             Cadastrar
           </button>
-
-          <div className="mt-5 text-sm text-gray-600 tracking-tight">
-            Já tem uma conta?
-          </div>
-
-          <Link href="/login">
-            <button
-              type="button"
-              className="p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm cursor-pointer text-gray-600 hover:bg-gray-100 transition-colors w-full"
-            >
-              Entrar
-            </button>
-          </Link>
         </form>
       </div>
     </div>
