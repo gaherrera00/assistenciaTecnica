@@ -65,7 +65,7 @@ export default function ChamadosUser() {
             onSubmit={handleSubmitStep1}
           >
             <h2 className="text-2xl font-medium text-gray-800 mb-3">
-              Cadastre-se
+              Faça seu chamado
             </h2>
             <label className="text-gray-800 text-sm font-medium mb-1 block">
               Nome do usuário

@@ -18,12 +18,12 @@ export default function Login() {
 
         <form className="flex flex-col gap-3">
           <label htmlFor="email" className="sr-only">
-            Usuário
+            E-Mail
           </label>
           <input
             type="email"
             id="email"
-            placeholder="Nome de usuário"
+            placeholder="E-Mail"
             required
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
@@ -53,17 +53,6 @@ export default function Login() {
             className="mt-2 text-xs text-green-700 underline cursor-pointer hover:text-green-600"
           >
             Esqueceu sua senha?
-          </Link>
-
-          <div className="mt-5 text-sm text-gray-600 tracking-tight">
-            Ainda não tem uma conta?
-          </div>
-
-          <Link
-            href="/cadastro"
-            className="p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm cursor-pointer text-black hover:bg-gray-100 transition-colors inline-block"
-          >
-            Criar conta
           </Link>
         </form>
       </div>

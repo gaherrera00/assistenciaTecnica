@@ -1,17 +1,19 @@
-import CryptoJS from "crypto-js";
+export function gerarRA(nomeCompleto, dataInicio, dataFim) {
+  const anoInicio = new Date(dataInicio).getFullYear().toString().slice(-2);
+  const anoFim = new Date(dataFim).getFullYear().toString().slice(-2);
+  let nomeNum = 0;
+  for (let i = 0; i < nomeCompleto.length; i++) {
+    nomeNum += nomeCompleto.charCodeAt(i);
+  }
+  const ultimos4 = nomeNum.toString().slice(-4).padStart(4, "0");
+  return `${anoInicio}${anoFim}${ultimos4}`;
+}
 
-const secretKeys = {
-  tecnico: "TECNICODO0800",
-  gerente: "GERENTEDO0800",
-};
-
-export function gerarCodigo(nome, funcao) {
-  const chave = secretKeys[funcao];
-
-  const hash = CryptoJS.HmacSHA256(nome.trim().toLowerCase(), chave).toString(
-    CryptoJS.enc.Hex
-  );
-  const numeros = hash.replace(/\D/g, "").slice(0, 9);
-
-  return `${numeros.slice(0, 3)}-${numeros.slice(3, 6)}-${numeros.slice(6, 9)}`;
+export function gerarSenha(tamanho = 6) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let senha = "";
+  for (let i = 0; i < tamanho; i++) {
+    senha += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return senha;
 }
