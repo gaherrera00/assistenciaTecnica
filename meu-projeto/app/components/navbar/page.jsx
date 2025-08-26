@@ -74,7 +74,7 @@ export default function Header() {
             </li>
             <li>
               <a
-                href="/chamadosUser"
+                href="/formularioUser"
                 className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A8B8B5] md:p-0"
               >
                 Chamados
