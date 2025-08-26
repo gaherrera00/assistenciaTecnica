@@ -24,6 +24,28 @@ const criarPatrimonioController = async (req, res) => {
     try {
         const { tipo_item, sala, data_aquisicao, observacoes } = req.body;
 
+        const tiposValidos = ['Computador', 'Mesa', 'Cadeira', 'Impressora', 'Projetor', 'Outros'];
+
+        if (!tipo_item || !tiposValidos.includes(tipo_item)) {
+            res.status(400).json({ mensagem: `tipo_item é obrigatório e deve ser um dos seguintes: ${tiposValidos.join(', ')}` });
+            return; // Interrompe a execução antes de criar o patrimônio
+        }
+
+        if (!sala || typeof sala !== 'string' || sala.trim().length < 2) {
+            res.status(400).json({ mensagem: 'sala é obrigatória e deve ter pelo menos 2 caracteres.' });
+            return;
+        }
+
+        if (data_aquisicao && isNaN(Date.parse(data_aquisicao))) {
+            res.status(400).json({ mensagem: 'data_aquisicao inválida.' });
+            return;
+        }
+
+        if (observacoes && typeof observacoes !== 'string') {
+            res.status(400).json({ mensagem: 'observacoes deve ser texto.' });
+            return;
+        }
+
         // monta o objeto com os dados
         const patrimonioData = {
             tipo_item: tipo_item || null,
@@ -44,6 +66,24 @@ const atualizarPatrimonioController = async (req, res) => {
     try {
         const patrimonioId = req.params.id;
         const { tipo_item, sala, data_aquisicao, observacoes } = req.body;
+
+        const tiposValidos = ['Computador', 'Mesa', 'Cadeira', 'Impressora', 'Projetor', 'Outros'];
+        
+        if (tipo_item && !tiposValidos.includes(tipo_item)) {
+            return res.status(400).json({ mensagem: `tipo_item inválido, deve ser um dos seguintes: ${tiposValidos.join(', ')}` });
+        }
+
+        if (sala && (typeof sala !== 'string' || sala.trim().length < 2)) {
+            return res.status(400).json({ mensagem: 'sala inválida.' });
+        }
+
+        if (data_aquisicao && isNaN(Date.parse(data_aquisicao))) {
+            return res.status(400).json({ mensagem: 'data_aquisicao inválida.' });
+        }
+
+        if (observacoes && typeof observacoes !== 'string') {
+            return res.status(400).json({ mensagem: 'observacoes deve ser texto.' });
+        }
 
         // monta o objeto com os dados
         const patrimonioData = {

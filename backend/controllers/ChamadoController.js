@@ -22,7 +22,7 @@ const obterChamadoPorIdController = async (req, res) => {
 
 const criarChamadoController = async (req, res) => {
     try {
-        const { nome, ra, turma, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
         if (!nome || typeof nome !== "string" || nome.trim().length < 3) {
             return res.status(400).json({ mensagem: "Nome é obrigatório e deve ter ao menos 3 caracteres." });
@@ -58,15 +58,18 @@ const criarChamadoController = async (req, res) => {
 
         // monta o objeto com os dados
         const chamadoData = {
-            nome: nome,
-            ra: ra,
-            turma: turma,
-            sintoma: sintoma,
-            detalhes: detalhes,
-            inicio: inicio,
-            frequencia: frequencia,
-            historico: historico
+            nome: nome ?? null,
+            ra: ra ?? null,
+            turma: turma ?? null,
+            id_patrimonio: id_patrimonio,
+            sintoma: sintoma ?? null,
+            detalhes: detalhes ?? null,
+            inicio: inicio ?? null,
+            frequencia: frequencia ?? null,
+            historico: historico ?? null
         };
+        console.log(chamadoData);
+        
     
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso.', chamadoId });
@@ -79,7 +82,7 @@ const criarChamadoController = async (req, res) => {
 const atualizarChamadoController = async (req, res) => {
     try {
         const chamadoId = req.params.id;
-        const { nome, ra, turma, patrimonio_id, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
         if (nome && (typeof nome !== "string" || nome.trim().length < 3)) {
             return res.status(400).json({ mensagem: "Nome deve ter ao menos 3 caracteres." });
@@ -115,15 +118,15 @@ const atualizarChamadoController = async (req, res) => {
 
         // monta o objeto com os dados
         const chamadoData = {
-            nome: nome,
-            ra: ra,
-            turma: turma,
-            patrimonio_id: patrimonio_id,
-            sintoma: sintoma,
-            detalhes: detalhes,
-            inicio: inicio,
-            frequencia: frequencia,
-            historico: historico
+            nome: nome ?? null,
+            ra: ra ?? null,
+            turma: turma ?? null,
+            id_patrimonio: id_patrimonio ?? null,
+            sintoma: sintoma ?? null,
+            detalhes: detalhes ?? null,
+            inicio: inicio ?? null,
+            frequencia: frequencia ?? null,
+            historico: historico ?? null
         };
 
         await atualizarChamado(chamadoId, chamadoData);

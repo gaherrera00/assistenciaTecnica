@@ -23,6 +23,28 @@ const obterPoolPorIdController = async (req, res) => {
 const criarPoolController = async (req, res) => {
     try {
         const { titulo, descricao, created_by, updated_by } = req.body;
+
+        const titulosValidos = ['externo', 'manutencao', 'apoio_tecnico', 'limpeza'];
+
+        if (!titulo || !titulosValidos.includes(titulo)) {
+            res.status(400).json({ mensagem: `titulo é obrigatório e deve ser um dos seguintes: ${titulosValidos.join(', ')}` });
+            return;
+        }
+
+        if (descricao && typeof descricao !== 'string') {
+            res.status(400).json({ mensagem: 'descricao deve ser texto.' });
+            return;
+        }
+
+        if (created_by && typeof created_by !== 'number') {
+            res.status(400).json({ mensagem: 'created_by deve ser um ID válido de usuário.' });
+            return;
+        }
+
+        if (updated_by && typeof updated_by !== 'number') {
+            res.status(400).json({ mensagem: 'updated_by deve ser um ID válido de usuário.' });
+            return;
+        }
     
         const poolData = {
             titulo: titulo ?? null,
@@ -43,6 +65,19 @@ const atualizarPoolController = async (req, res) => {
     try {
         const poolId = req.params.id;
         const { titulo, descricao, criado_em, atualizado_em } = req.body;
+
+        const titulosValidos = ['externo', 'manutencao', 'apoio_tecnico', 'limpeza'];
+
+        // 🔹 Validações
+        if (titulo && !titulosValidos.includes(titulo)) {
+            res.status(400).json({ mensagem: `titulo inválido, deve ser um dos seguintes: ${titulosValidos.join(', ')}` });
+            return;
+        }
+
+        if (descricao && typeof descricao !== 'string') {
+            res.status(400).json({ mensagem: 'descricao deve ser texto.' });
+            return;
+        }
     
         const poolData = {
             titulo: titulo, 
