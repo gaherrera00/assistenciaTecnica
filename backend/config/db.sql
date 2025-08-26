@@ -1,5 +1,6 @@
 CREATE DATABASE zelos;
 use zelos;
+DROP DATABASE zelos;
 
 -- Criação da tabela `usuarios`
 CREATE TABLE usuarios (
@@ -7,11 +8,15 @@ CREATE TABLE usuarios (
     nome VARCHAR(255) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    ra VARCHAR(20) NOT NULL UNIQUE,
     funcao VARCHAR(100) NOT NULL,
     status ENUM('ativo', 'inativo') DEFAULT 'ativo',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+INSERT INTO usuarios (nome, senha, email, funcao)
+VALUES ('Seu Nome', 'sua_senha', 'seu.email@exemplo.com', 'admin');
 
 -- Criação da tabela `pool`
 CREATE TABLE pool (
@@ -42,12 +47,12 @@ CREATE TABLE chamados (
     
     -- Dados do usuário
     nome VARCHAR(255) NOT NULL,
-    sala_id INT NOT NULL,
+    sala VARCHAR(250) NOT NULL,
     ra VARCHAR(20) NOT NULL,
     turma VARCHAR(50) NOT NULL,
     
     -- Dados do chamado
-    patrimonios_id VARCHAR(100) NOT NULL,
+    patrimonios_id INT NOT NULL,
     sintoma VARCHAR(255) NOT NULL,
     detalhes TEXT,
     inicio TIMESTAMP NOT NULL,
@@ -60,24 +65,18 @@ CREATE TABLE chamados (
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
     FOREIGN KEY (patrimonios_id) REFERENCES patrimonios(id_patrimonio),
-    FOREIGN KEY (sala_id) REFERENCES salas(id_sala)
-);
-
-CREATE TABLE salas (
-    id_sala INT AUTO_INCREMENT PRIMARY KEY,
-    nome_sala VARCHAR(50) NOT NULL
+    FOREIGN KEY (ra) REFERENCES usuarios(ra)
 );
 
 CREATE TABLE patrimonios (
-    id_patrimonio VARCHAR(100) NOT NULL PRIMARY KEY,
+    id_patrimonio INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     tipo_item ENUM('Computador', 'Mesa', 'Cadeira', 'Impressora', 'Projetor', 'Outros') NOT NULL,
-    sala_id INT NOT NULL,
+    sala VARCHAR(250) NOT NULL,
     status ENUM('disponível', 'em uso', 'em manutenção') DEFAULT 'disponível',
     data_aquisicao DATE,
     observacoes TEXT,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (sala_id) REFERENCES salas(id_sala)
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE apontamentos (

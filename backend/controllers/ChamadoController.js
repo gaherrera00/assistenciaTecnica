@@ -22,15 +22,45 @@ const obterChamadoPorIdController = async (req, res) => {
 
 const criarChamadoController = async (req, res) => {
     try {
-        const { nome, sala, ra, turma, id_maquina, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        const { nome, ra, turma, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+
+        if (!nome || typeof nome !== "string" || nome.trim().length < 3) {
+            return res.status(400).json({ mensagem: "Nome é obrigatório e deve ter ao menos 3 caracteres." });
+        }
+
+        if (!ra || typeof ra !== "string" || ra.trim().length < 5) {
+            return res.status(400).json({ mensagem: "RA é obrigatório e deve ter ao menos 5 caracteres." });
+        }
+
+        if (!turma || typeof turma !== "string" || turma.trim().length < 2) {
+            return res.status(400).json({ mensagem: "Turma é obrigatória e deve ter ao menos 2 caracteres." });
+        }
+
+        if (!sintoma || typeof sintoma !== "string" || sintoma.trim().length < 5) {
+            return res.status(400).json({ mensagem: "Sintoma é obrigatório e deve ter ao menos 5 caracteres." });
+        }
+
+        if (detalhes && typeof detalhes !== "string") {
+            return res.status(400).json({ mensagem: "Detalhes devem ser texto." });
+        }
+
+        if (inicio && isNaN(Date.parse(inicio))) {
+            return res.status(400).json({ mensagem: "Data de início inválida." });
+        }
+
+        if (frequencia && typeof frequencia !== "string") {
+            return res.status(400).json({ mensagem: "Frequência deve ser texto." });
+        }
+
+        if (historico && typeof historico !== "string") {
+            return res.status(400).json({ mensagem: "Histórico deve ser texto." });
+        }
 
         // monta o objeto com os dados
         const chamadoData = {
             nome: nome,
-            sala: sala,
             ra: ra,
             turma: turma,
-            id_maquina: id_maquina,
             sintoma: sintoma,
             detalhes: detalhes,
             inicio: inicio,
@@ -49,15 +79,46 @@ const criarChamadoController = async (req, res) => {
 const atualizarChamadoController = async (req, res) => {
     try {
         const chamadoId = req.params.id;
-        const { nome, sala, ra, turma, id_maquina, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        const { nome, ra, turma, patrimonio_id, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+
+        if (nome && (typeof nome !== "string" || nome.trim().length < 3)) {
+            return res.status(400).json({ mensagem: "Nome deve ter ao menos 3 caracteres." });
+        }
+
+        if (ra && (typeof ra !== "string" || ra.trim().length < 5)) {
+            return res.status(400).json({ mensagem: "RA inválido." });
+        }
+
+        if (turma && (typeof turma !== "string" || turma.trim().length < 2)) {
+            return res.status(400).json({ mensagem: "Turma inválida." });
+        }
+
+        if (sintoma && (typeof sintoma !== "string" || sintoma.trim().length < 5)) {
+            return res.status(400).json({ mensagem: "Sintoma deve ter ao menos 5 caracteres." });
+        }
+
+        if (detalhes && typeof detalhes !== "string") {
+            return res.status(400).json({ mensagem: "Detalhes devem ser texto." });
+        }
+
+        if (inicio && isNaN(Date.parse(inicio))) {
+            return res.status(400).json({ mensagem: "Data de início inválida." });
+        }
+
+        if (frequencia && typeof frequencia !== "string") {
+            return res.status(400).json({ mensagem: "Frequência deve ser texto." });
+        }
+
+        if (historico && typeof historico !== "string") {
+            return res.status(400).json({ mensagem: "Histórico deve ser texto." });
+        }
 
         // monta o objeto com os dados
         const chamadoData = {
             nome: nome,
-            sala: sala,
             ra: ra,
             turma: turma,
-            id_patrimonio: id_maquina,
+            patrimonio_id: patrimonio_id,
             sintoma: sintoma,
             detalhes: detalhes,
             inicio: inicio,

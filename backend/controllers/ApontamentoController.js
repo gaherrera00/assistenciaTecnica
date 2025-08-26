@@ -24,6 +24,31 @@ const criarApontamentoController = async (req, res) => {
     try {
         const { descricao, comeco, fim, duracao, criado_em } = req.body;
 
+        // 🔹 Validações básicas
+        if (!descricao || typeof descricao !== "string" || descricao.trim().length < 3) {
+            return res.status(400).json({ mensagem: "Descrição é obrigatória e deve ter pelo menos 3 caracteres." });
+        }
+
+        if (!comeco || isNaN(Date.parse(comeco))) {
+            return res.status(400).json({ mensagem: "Data de início (comeco) inválida." });
+        }
+
+        if (!fim || isNaN(Date.parse(fim))) {
+            return res.status(400).json({ mensagem: "Data de fim (fim) inválida." });
+        }
+
+        if (new Date(fim) <= new Date(comeco)) {
+            return res.status(400).json({ mensagem: "A data de fim deve ser posterior à data de início." });
+        }
+
+        if (!duracao || typeof duracao !== "number" || duracao <= 0) {
+            return res.status(400).json({ mensagem: "Duração deve ser um número maior que 0." });
+        }
+
+        if (criado_em && isNaN(Date.parse(criado_em))) {
+            return res.status(400).json({ mensagem: "Data de criação inválida." });
+        }
+
         const apontamentoData = {
             descricao: descricao,
             comeco: comeco,

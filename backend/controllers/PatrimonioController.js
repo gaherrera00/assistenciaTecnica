@@ -22,13 +22,12 @@ const obterPatrimonioPorIdController = async (req, res) => {
 
 const criarPatrimonioController = async (req, res) => {
     try {
-        const { id_item, tipo_item, sala_id, data_aquisicao, observacoes } = req.body;
+        const { tipo_item, sala, data_aquisicao, observacoes } = req.body;
 
         // monta o objeto com os dados
         const patrimonioData = {
-            id_item: id_item || null, // Substitui undefined por null
             tipo_item: tipo_item || null,
-            sala_id: sala_id || null,
+            sala: sala,
             data_aquisicao: data_aquisicao || null,
             observacoes: observacoes || null
         };
@@ -44,15 +43,14 @@ const criarPatrimonioController = async (req, res) => {
 const atualizarPatrimonioController = async (req, res) => {
     try {
         const patrimonioId = req.params.id;
-        const { id_item, tipo_item, id_sala, data_aquisicao, observacoes } = req.body;
+        const { tipo_item, sala, data_aquisicao, observacoes } = req.body;
 
         // monta o objeto com os dados
         const patrimonioData = {
-            id_item: id_item,
-            tipo_item: tipo_item,
-            id_sala: id_sala,
-            data_aquisicao: data_aquisicao,
-            observacoes: observacoes
+            tipo_item: tipo_item || null,
+            sala: sala,
+            data_aquisicao: data_aquisicao || null,
+            observacoes: observacoes || null
         };
 
         await atualizarPatrimonio(patrimonioId, patrimonioData);
