@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { gerarRA } from "../../utils/gerarCodigo";
 
@@ -10,6 +11,10 @@ export default function Cadastro() {
   const [senha, setSenha] = useState("");
   const [funcao, setFuncao] = useState("");
   const [ra, setRa] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const router = useRouter();
 
   function handleFuncaoChange(e) {
     const val = e.target.value;
@@ -35,8 +40,11 @@ export default function Cadastro() {
     }
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
     // Se for cliente, gera o RA se ainda não foi gerado
     if (funcao === "cliente" && !ra && email) {
@@ -44,8 +52,38 @@ export default function Cadastro() {
       setRa(raGerado);
     }
 
-    //MANDAR PARA O BANCO DE DADOS
-    alert("Cadastro realizado com sucesso!");
+    try {
+      const userData = {
+        nome,
+        email,
+        senha,
+        funcao,
+        ...(funcao === "cliente" && { ra })
+      };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/cadastro`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess("Cadastro realizado com sucesso! Redirecionando...");
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      } else {
+        setError(data.mensagem || "Erro ao realizar cadastro");
+      }
+    } catch (err) {
+      setError("Erro de conexão. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -60,6 +98,18 @@ export default function Cadastro() {
         </div>
 
         <h2 className="text-2xl font-medium text-gray-800 mb-5">Criar Conta</h2>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm">
+            {success}
+          </div>
+        )}
 
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <label htmlFor="nome" className="sr-only">
@@ -125,10 +175,18 @@ export default function Cadastro() {
 
           <button
             type="submit"
-            className="p-3 bg-[#084438] text-white border-none rounded-lg text-base cursor-pointer hover:bg-green-800 transition-colors"
+            disabled={loading}
+            className="p-3 bg-[#084438] text-white border-none rounded-lg text-base cursor-pointer hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Cadastrar
+            {loading ? "Cadastrando..." : "Cadastrar"}
           </button>
+
+          <Link
+            href="/login"
+            className="mt-2 text-xs text-green-700 underline cursor-pointer hover:text-green-600"
+          >
+            Já tem uma conta? Faça login
+          </Link>
         </form>
       </div>
     </div>
