@@ -17,7 +17,9 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      console.log(process.env.NEXT_PUBLIC_API_URL);
+
+      const response = await fetch("http://localhost:3001/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,6 +45,7 @@ export default function Login() {
       }
     } catch (err) {
       setError("Erro de conexão. Tente novamente.");
+
     } finally {
       setLoading(false);
     }
@@ -71,12 +74,12 @@ export default function Login() {
 
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <label htmlFor="email" className="sr-only">
-            E-Mail
+            RA
           </label>
           <input
-            type="email"
+            type="number"
             id="email"
-            placeholder="E-Mail"
+            placeholder="RA"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
