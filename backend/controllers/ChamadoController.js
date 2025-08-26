@@ -22,15 +22,13 @@ const obterChamadoPorIdController = async (req, res) => {
 
 const criarChamadoController = async (req, res) => {
     try {
-        const { nome, sala, ra, turma, id_maquina, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        const { nome, ra, turma, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
         // monta o objeto com os dados
         const chamadoData = {
             nome: nome,
-            sala: sala,
             ra: ra,
             turma: turma,
-            id_maquina: id_maquina,
             sintoma: sintoma,
             detalhes: detalhes,
             inicio: inicio,
@@ -49,15 +47,14 @@ const criarChamadoController = async (req, res) => {
 const atualizarChamadoController = async (req, res) => {
     try {
         const chamadoId = req.params.id;
-        const { nome, sala, ra, turma, id_maquina, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        const { nome, ra, turma, patrimonio_id, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
         // monta o objeto com os dados
         const chamadoData = {
             nome: nome,
-            sala: sala,
             ra: ra,
             turma: turma,
-            id_patrimonio: id_maquina,
+            patrimonio_id: patrimonio_id,
             sintoma: sintoma,
             detalhes: detalhes,
             inicio: inicio,

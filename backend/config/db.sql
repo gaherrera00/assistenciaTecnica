@@ -10,7 +10,8 @@ CREATE TABLE usuarios (
     funcao VARCHAR(100) NOT NULL,
     status ENUM('ativo', 'inativo') DEFAULT 'ativo',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
 );
 
 -- Criação da tabela `pool`
@@ -21,10 +22,8 @@ CREATE TABLE pool (
     status ENUM('ativo', 'inativo') DEFAULT 'ativo',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    created_by INT,
-    updated_by INT,
-    FOREIGN KEY (created_by) REFERENCES usuarios(id_usuario),
-    FOREIGN KEY (updated_by) REFERENCES usuarios(id_usuario)
+    FOREIGN KEY (criado_em) REFERENCES pool(criado_em),
+    FOREIGN KEY (atualizado_em) REFERENCES usuarios(atualizado_em)
 );
 
     -- Criação da tabela `pool_tecnico`
@@ -42,12 +41,12 @@ CREATE TABLE chamados (
     
     -- Dados do usuário
     nome VARCHAR(255) NOT NULL,
-    sala_id INT NOT NULL,
+    sala VARCHAR(250) NOT NULL,
     ra VARCHAR(20) NOT NULL,
     turma VARCHAR(50) NOT NULL,
     
     -- Dados do chamado
-    patrimonios_id VARCHAR(100) NOT NULL,
+    patrimonios_id INT NOT NULL,
     sintoma VARCHAR(255) NOT NULL,
     detalhes TEXT,
     inicio TIMESTAMP NOT NULL,
@@ -59,25 +58,18 @@ CREATE TABLE chamados (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
-    FOREIGN KEY (patrimonios_id) REFERENCES patrimonios(id_patrimonio),
-    FOREIGN KEY (sala_id) REFERENCES salas(id_sala)
-);
-
-CREATE TABLE salas (
-    id_sala INT AUTO_INCREMENT PRIMARY KEY,
-    nome_sala VARCHAR(50) NOT NULL
+    FOREIGN KEY (patrimonios_id) REFERENCES patrimonios(id_patrimonio)
 );
 
 CREATE TABLE patrimonios (
-    id_patrimonio VARCHAR(100) NOT NULL PRIMARY KEY,
+    id_patrimonio INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     tipo_item ENUM('Computador', 'Mesa', 'Cadeira', 'Impressora', 'Projetor', 'Outros') NOT NULL,
-    sala_id INT NOT NULL,
+    sala VARCHAR(250) NOT NULL,
     status ENUM('disponível', 'em uso', 'em manutenção') DEFAULT 'disponível',
     data_aquisicao DATE,
     observacoes TEXT,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (sala_id) REFERENCES salas(id_sala)
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE apontamentos (
