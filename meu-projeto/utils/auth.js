@@ -1,3 +1,22 @@
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'sua-chave-secreta-super-segura';
+
+export function verifyToken(token) {
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (error) {
+    return null;
+  }
+}
+
+export function getTokenFromHeader(authHeader) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+  return authHeader.substring(7);
+}
+
 // Utilitário para gerenciar autenticação
 export const getAuthToken = () => {
   if (typeof window !== 'undefined') {

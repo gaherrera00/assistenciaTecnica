@@ -9,7 +9,11 @@ import poolRotas from './routes/poolRotas.js';
 import apontamentoRotas from './routes/apontamentoRotas.js';
 import acompChamadoRotas from './routes/acompChamadoRotas.js';
 import patrimonioRotas from './routes/patrimonioRotas.js';
+<<<<<<< Updated upstream
 import salaRotas from './routes/salasRotas.js';
+=======
+
+>>>>>>> Stashed changes
 
 app.use(cors());
 app.use(express.json());
@@ -24,7 +28,11 @@ app.use('/pool', poolRotas);
 app.use('/apontamento', apontamentoRotas);
 app.use('/acompanhamento', acompChamadoRotas);
 app.use('/patrimonio', patrimonioRotas);
+<<<<<<< Updated upstream
 app.use('/sala', salaRotas);
+=======
+
+>>>>>>> Stashed changes
 
 app.options('/', (req, res) => {
   res.setHeader('Allow', 'GET, OPTIONS');
