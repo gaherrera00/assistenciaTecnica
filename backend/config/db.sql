@@ -1,5 +1,6 @@
 CREATE DATABASE zelos;
 use zelos;
+DROP DATABASE zelos;
 
 -- Criação da tabela `usuarios`
 CREATE TABLE usuarios (
@@ -7,12 +8,15 @@ CREATE TABLE usuarios (
     nome VARCHAR(255) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    ra VARCHAR(20) NOT NULL UNIQUE,
     funcao VARCHAR(100) NOT NULL,
     status ENUM('ativo', 'inativo') DEFAULT 'ativo',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+INSERT INTO usuarios (nome, senha, email, funcao)
+VALUES ('Seu Nome', 'sua_senha', 'seu.email@exemplo.com', 'admin');
 
 -- Criação da tabela `pool`
 CREATE TABLE pool (
@@ -22,8 +26,10 @@ CREATE TABLE pool (
     status ENUM('ativo', 'inativo') DEFAULT 'ativo',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (criado_em) REFERENCES pool(criado_em),
-    FOREIGN KEY (atualizado_em) REFERENCES usuarios(atualizado_em)
+    created_by INT,
+    updated_by INT,
+    FOREIGN KEY (created_by) REFERENCES usuarios(id_usuario),
+    FOREIGN KEY (updated_by) REFERENCES usuarios(id_usuario)
 );
 
     -- Criação da tabela `pool_tecnico`
@@ -58,7 +64,8 @@ CREATE TABLE chamados (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
-    FOREIGN KEY (patrimonios_id) REFERENCES patrimonios(id_patrimonio)
+    FOREIGN KEY (patrimonios_id) REFERENCES patrimonios(id_patrimonio),
+    FOREIGN KEY (ra) REFERENCES usuarios(ra)
 );
 
 CREATE TABLE patrimonios (
