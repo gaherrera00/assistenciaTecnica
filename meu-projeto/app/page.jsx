@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function Home() {
   return (
     <main className="bg-secondary text-black">
@@ -24,22 +25,20 @@ export default function Home() {
               <span className="text-primary">DO SENAI</span>
             </h1>
             <p className="mt-4 text-lg">Precisa de ajuda? Contate-nos</p>
-
-            <form className="mt-6 space-y-3 ">
-              <input
-                type="text"
-                placeholder="Nome"
-                className="w-full p-3 rounded-md text-black bg-white opacity-30"
-              />
-              <input
-                type="tel"
-                placeholder="Telefone"
-                className="w-full p-3 rounded-md text-black bg-white opacity-30"
-              />
-              <button className="w-full bg-gradient-to-r from-[#084438] to-green-700 p-3 rounded-md font-bold text-white">
+            <div className="mt-8 space-y-4">
+              <Link
+                href="/login"
+                className="inline-block w-full max-w-xs bg-gradient-to-r from-[#084438] to-green-700 p-3 rounded-md font-bold text-white text-center"
+              >
+                ACESSAR SISTEMA
+              </Link>
+              <Link
+                href="/formularioUser"
+                className="inline-block w-full max-w-xs bg-white text-green-800 p-3 rounded-md font-bold text-center border-2 border-green-700"
+              >
                 FAZER CHAMADO
-              </button>
-            </form>
+              </Link>
+            </div>
           </div>
 
           {/* Imagem */}
@@ -85,7 +84,6 @@ export default function Home() {
               <p className="mt-2 text-sm">{b.desc}</p>
             </div>
           ))}
-          {/*ainnnn gustavo */}
         </div>
       </section>
 
