@@ -27,9 +27,9 @@ const criarPool = async (poolData) => {
     }
 };
 
-const atualizarPool = async (poolData, id) => {
+const atualizarPool = async (id, poolData) => {
     try {
-      await update('pool', chamadoData, `id_pool = ${id}`);
+      await update('pool', poolData, `id_pool = ${id}`);
     } catch (error) {
       console.error('Erro ao atualizar pool:', error);
       throw error;

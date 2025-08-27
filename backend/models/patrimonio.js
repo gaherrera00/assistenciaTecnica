@@ -11,7 +11,7 @@ const listarPatrimonios = async () => {
 
 const obterPatrimonioPorId = async (id) => {
   try {
-    return await read('patrimonios', `id_patrimonios = ${id}`);
+    return await read('patrimonios', `id_patrimonio = '${id}'`);
   } catch (error) {
     console.error('Erro ao obter patrimonio por ID:', error);
     throw error;
@@ -29,7 +29,7 @@ const criarPatrimonio = async (patrimonioData) => {
 
 const atualizarPatrimonio = async (id, patrimonioData) => {
   try {
-    await update('patrimonios', patrimonioData, `id_patrimonios = ${id}`);
+    await update('patrimonios', patrimonioData, `id_patrimonio = '${id}'`);
   } catch (error) {
     console.error('Erro ao atualizar patrimonio:', error);
     throw error;
@@ -38,7 +38,7 @@ const atualizarPatrimonio = async (id, patrimonioData) => {
 
 const excluirPatrimonio = async (id) => {
   try {
-    await deleteRecord('patrimonios', `id_patrimonios = ${id}`);
+    await deleteRecord('patrimonios', `id_patrimonio = '${id}'`);
   } catch (error) {
     console.error('Erro ao excluir patrimonio:', error);
     throw error;

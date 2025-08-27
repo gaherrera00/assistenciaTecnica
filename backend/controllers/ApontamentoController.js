@@ -22,9 +22,8 @@ const obterApontamentoPorIdController = async (req, res) => {
 
 const criarApontamentoController = async (req, res) => {
     try {
-        const { descricao, comeco, fim, duracao, criado_em } = req.body;
+        const { id_chamado, id_tecnico, descricao, comeco, fim, duracao, criado_em } = req.body;
 
-        // 🔹 Validações básicas
         if (!descricao || typeof descricao !== "string" || descricao.trim().length < 3) {
             return res.status(400).json({ mensagem: "Descrição é obrigatória e deve ter pelo menos 3 caracteres." });
         }
@@ -50,6 +49,8 @@ const criarApontamentoController = async (req, res) => {
         }
 
         const apontamentoData = {
+            id_chamado: id_chamado,
+            id_tecnico: id_tecnico,
             descricao: descricao,
             comeco: comeco,
             fim: fim,

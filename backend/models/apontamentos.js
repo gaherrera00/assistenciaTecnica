@@ -22,7 +22,7 @@ const criarApontamento = async (apontamentoData) => {
     try {
         return await create('apontamentos', apontamentoData);
     } catch (err) {
-        console.error('Erro ao criar apontamento: ', error);
+        console.error('Erro ao criar apontamento: ', err);
         throw err;
     }
 };

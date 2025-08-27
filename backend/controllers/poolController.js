@@ -87,7 +87,7 @@ const atualizarPoolController = async (req, res) => {
         }
         
         await atualizarPool(poolId, poolData);
-        res.status(201).json({ mensagem: 'Erro ao atualizar pool.' })
+        res.status(201).json({ mensagem: 'Pool atualizado com sucesso.' })
     } catch (err) {
         console.error('Erro ao atualizar pool: ', err);
         res.status(500).json({ mensagem: 'Erro ao atualizar pool.' });

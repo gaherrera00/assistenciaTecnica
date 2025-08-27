@@ -105,7 +105,7 @@ const excluirPatrimonioController = async (req, res) => {
     try {
         const patrimonioId = req.params.id;
         await excluirPatrimonio(patrimonioId);
-        res.status(200).json({ mensagem: 'patrimonio excluído com sucesso.' });
+        res.status(200).json({ mensagem: 'Patrimonio excluído com sucesso.' });
     } catch (err) {
         console.error('Erro ao excluir patrimonio: ', err);
         res.status(500).json({ mensagem: 'Erro ao excluir patrimonio.' });

@@ -7,7 +7,6 @@ import authRotas from './routes/authRotas.js';
 import chamadoRotas from './routes/chamadoRotas.js';
 import poolRotas from './routes/poolRotas.js';
 import apontamentoRotas from './routes/apontamentoRotas.js';
-import acompChamadoRotas from './routes/acompChamadoRotas.js';
 import patrimonioRotas from './routes/patrimonioRotas.js';
 
 app.use(cors());
@@ -21,7 +20,6 @@ app.use('/auth', authRotas);
 app.use('/chamado', chamadoRotas);
 app.use('/pool', poolRotas);
 app.use('/apontamento', apontamentoRotas);
-app.use('/acompanhamento', acompChamadoRotas);
 app.use('/patrimonio', patrimonioRotas);
 
 app.options('/', (req, res) => {
