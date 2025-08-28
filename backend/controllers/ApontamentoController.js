@@ -1,4 +1,5 @@
 import { listarApontamentos, obterApontamentoPorId, criarApontamento, excluirApontamento } from '../models/apontamentos.js';
+import { read } from '../config/database.js';
 
 const listarApontamentosController = async (req, res) => {
     try {
@@ -23,6 +24,16 @@ const obterApontamentoPorIdController = async (req, res) => {
 const criarApontamentoController = async (req, res) => {
     try {
         const { id_chamado, id_tecnico, descricao, comeco, fim, duracao, criado_em } = req.body;
+
+        const verificarChamado = await read('chamados', `id_chamado = '${id_chamado}'`);
+        if (id_chamado != verificarChamado) {
+            return res.status(400).json({ mensagem: "Chamado inexistente." });
+        }
+
+        const verificarTec = await read('pool_tecnico', `id_tecnico = '${id_tecnico}'`);
+        if (id_tecnico != verificarTec) {
+            return res.status(400).json({ mensagem: "id do tecnico inexistente." });
+        }
 
         if (!descricao || typeof descricao !== "string" || descricao.trim().length < 3) {
             return res.status(400).json({ mensagem: "Descrição é obrigatória e deve ter pelo menos 3 caracteres." });

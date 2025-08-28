@@ -1,4 +1,5 @@
 import { listarChamados, obterChamadoPorId, criarChamado, atualizarChamado, excluirChamado } from "../models/chamado.js";
+import { read } from '../config/database.js';
 
 const listarChamadosController = async (req, res) => {
     try {
@@ -35,6 +36,11 @@ const criarChamadoController = async (req, res) => {
 
         if (!turma || typeof turma !== "string" || turma.trim().length < 2) {
             return res.status(400).json({ mensagem: "Turma é obrigatória e deve ter ao menos 2 caracteres." });
+        }
+
+        const validarPatrimonio = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
+        if (id_patrimonio != validarPatrimonio) {
+            return res.status(400).json({ mensagem: "Patrimonio não encontrado." });
         }
 
         if (!sintoma || typeof sintoma !== "string" || sintoma.trim().length < 5) {

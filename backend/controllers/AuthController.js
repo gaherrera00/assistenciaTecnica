@@ -28,7 +28,26 @@ const cadastro = async (req, res) => {
       return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
     }
 
+    let raFinal = null;
 
+    if (funcao === 'aluno') {
+      if (!ra) {
+        return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
+      }
+
+      // Verifica se RA já existe
+      const usuarioComRa = await read('usuarios', `ra = '${ra}'`);
+      if (usuarioComRa && usuarioComRa.length > 0) {
+        return res.status(400).json({ mensagem: 'RA já cadastrado!' });
+      }
+
+      raFinal = ra;
+    }
+
+    // Técnico e Gerente → RA fica NULL
+    if (funcao === 'tecnico' || funcao === 'gerente') {
+      raFinal = null;
+    }
 
     const verificarFuncao = ['aluno', 'tecnico', 'gerente'];
 
