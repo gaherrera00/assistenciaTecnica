@@ -1,80 +1,30 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const router = useRouter();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Salva o token e dados do usuário
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
-        // Redireciona para o dashboard
-        router.push("/dashboard");
-      } else {
-        setError(data.error || "Erro no login");
-      }
-    } catch (err) {
-      setError("Erro de conexão. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#084438] to-green-700 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Login do Sistema
-          </h2>
-          <p className="mt-2 text-center text-sm text-green-100">
-            Acesse com suas credenciais
-          </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="bg-white p-8 rounded-xl shadow-lg max-w-sm w-full text-center">
+        <div className="mb-6">
+          <img
+            src="/logo.png"
+            alt="Zelus Assistência Técnica"
+            className="w-44 mx-auto"
+          />
         </div>
 
         <h2 className="text-2xl font-medium text-gray-800 mb-5">
           Entrar na Conta
         </h2>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
-
-        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-3">
           <label htmlFor="email" className="sr-only">
-            RA
+            Usuário
           </label>
           <input
             type="email"
             id="email"
-            placeholder="Email institucional"
+            placeholder="Nome de usuário"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
 
@@ -87,32 +37,34 @@ export default function Login() {
               id="senha"
               placeholder="Senha"
               required
-              value={password}
-              onChange={(e) => setSenha(e.target.value)}
               className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
             />
           </div>
 
-          {error && (
-            <div className="text-red-200 text-center text-sm">{error}</div>
-          )}
+          <button
+            type="submit"
+            className="p-3 bg-[#084438] text-white border-none rounded-lg text-base cursor-pointer hover:bg-green-800 transition-colors"
+          >
+            Entrar
+          </button>
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-green-800 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-            >
-              {loading ? "Entrando..." : "Entrar"}
-            </button>
+          <Link
+            href="/esqueceuSenha"
+            className="mt-2 text-xs text-green-700 underline cursor-pointer hover:text-green-600"
+          >
+            Esqueceu sua senha?
+          </Link>
+
+          <div className="mt-5 text-sm text-gray-600 tracking-tight">
+            Ainda não tem uma conta?
           </div>
 
-          <div className="text-center text-green-100 text-sm">
-            <p className="font-semibold">Credenciais de teste:</p>
-            <p>Admin: admin@exemplo.com / password</p>
-            <p>Técnico: tecnico@exemplo.com / password</p>
-            <p>Usuário: user@exemplo.com / password</p>
-          </div>
+          <Link
+            href="/cadastro"
+            className="p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm cursor-pointer text-black hover:bg-gray-100 transition-colors inline-block"
+          >
+            Criar conta
+          </Link>
         </form>
       </div>
     </div>
