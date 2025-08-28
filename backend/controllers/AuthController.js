@@ -3,7 +3,7 @@ import { criarCadastro } from '../models/auth.js';
 import jwt from 'jsonwebtoken';
 
 const cadastro = async (req, res) => {
-  const { email, senha, funcao } = req.body;
+  const { nome, email, senha, ra, funcao } = req.body;
   try {
     const usuario = await read('usuarios', `email = '${email}'`);
 
@@ -27,6 +27,8 @@ const cadastro = async (req, res) => {
       return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
     }
 
+
+
     const verificarFuncao = ['aluno', 'tecnico', 'gerente'];
 
     if (!verificarFuncao.includes(funcao)) {
@@ -34,8 +36,10 @@ const cadastro = async (req, res) => {
     }
 
     const cadastroData = {
+      nome: nome,
       email: email, 
       senha: senha,
+      ra: ra,
       funcao: funcao
     };
     
@@ -48,11 +52,11 @@ const cadastro = async (req, res) => {
 }
 
 const loginController = async (req, res) => {
-  const { ra, senha } = req.body;
+  const { email, senha } = req.body;
 
   try {
     // Verificar se o usuário existe no banco de dados
-    const usuario = await read('usuarios', `ra = '${ra}'`);
+    const usuario = await read('usuarios', `email = '${email}'`);
 
     if (!usuario) {
       return res.status(404).json({ mensagem: 'Usuário não encontrado' });
@@ -62,7 +66,7 @@ const loginController = async (req, res) => {
     const senhaCorreta = await compare(senha, usuario.senha);
 
     if (!senhaCorreta) {
-      return res.status(401).json({ mensagem: 'Senha ou ra incorreto' });
+      return res.status(401).json({ mensagem: 'Senha ou email incorreto' });
     }
 
     // Gerar o token JWT
