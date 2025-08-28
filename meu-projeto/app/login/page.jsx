@@ -15,13 +15,7 @@ export default function Login() {
     setError("");
 
     try {
-<<<<<<< Updated upstream
-      console.log(process.env.NEXT_PUBLIC_API_URL);
-
-      const response = await fetch("http://localhost:3001/auth/login", {
-=======
       const response = await fetch("/api/auth/login", {
->>>>>>> Stashed changes
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,12 +36,8 @@ export default function Login() {
         setError(data.error || "Erro no login");
       }
     } catch (err) {
-<<<<<<< Updated upstream
       setError("Erro de conexão. Tente novamente.");
 
-=======
-      setError("Erro de conexão");
->>>>>>> Stashed changes
     } finally {
       setLoading(false);
     }
@@ -64,7 +54,6 @@ export default function Login() {
             Acesse com suas credenciais
           </p>
         </div>
-<<<<<<< Updated upstream
 
         <h2 className="text-2xl font-medium text-gray-800 mb-5">
           Entrar na Conta
@@ -99,45 +88,10 @@ export default function Login() {
               id="senha"
               placeholder="Senha"
               required
-              value={senha}
+              value={password}
               onChange={(e) => setSenha(e.target.value)}
               className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
             />
-=======
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Senha
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
->>>>>>> Stashed changes
           </div>
 
           {error && (
