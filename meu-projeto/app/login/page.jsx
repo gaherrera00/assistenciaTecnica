@@ -29,7 +29,7 @@ export default function Login() {
         // Salva o token e dados do usuário
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        
+
         // Redireciona para o dashboard
         router.push("/dashboard");
       } else {
@@ -37,7 +37,6 @@ export default function Login() {
       }
     } catch (err) {
       setError("Erro de conexão. Tente novamente.");
-
     } finally {
       setLoading(false);
     }
@@ -70,9 +69,9 @@ export default function Login() {
             RA
           </label>
           <input
-            type="number"
+            type="email"
             id="email"
-            placeholder="RA"
+            placeholder="Email institucional"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -95,9 +94,7 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="text-red-200 text-center text-sm">
-              {error}
-            </div>
+            <div className="text-red-200 text-center text-sm">{error}</div>
           )}
 
           <div>
