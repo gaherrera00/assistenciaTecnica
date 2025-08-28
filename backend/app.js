@@ -1,7 +1,8 @@
+import 'dotenv/config';
 import express from 'express';
 const app = express();
 import cors from 'cors';
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 import authRotas from './routes/authRotas.js';
 import chamadoRotas from './routes/chamadoRotas.js';

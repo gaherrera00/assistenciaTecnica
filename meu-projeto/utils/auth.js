@@ -53,6 +53,12 @@ export const getUser = () => {
   return null;
 };
 
+export const setUser = (user) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+};
+
 export const logout = () => {
   removeAuthToken();
   if (typeof window !== 'undefined') {

@@ -12,12 +12,13 @@ const listarChamadosController = async (req, res) => {
 
 const obterChamadoPorIdController = async (req, res) => {
     try {
-    chamados = await obterChamadoPorId(id);
-    res.status(200).json(chamados);
+        const { id } = req.params;
+        const chamado = await obterChamadoPorId(id);
+        res.status(200).json(chamado);
     } catch (err) {
         console.error('Erro ao obter chamado por ID: ', err);
-        res.status(500).json({ mensagem: 'Erro ao obter chamado por ID. '});
-    };
+        res.status(500).json({ mensagem: 'Erro ao obter chamado por ID.' });
+    }
 };
 
 const criarChamadoController = async (req, res) => {
@@ -28,8 +29,8 @@ const criarChamadoController = async (req, res) => {
             return res.status(400).json({ mensagem: "Nome é obrigatório e deve ter ao menos 3 caracteres." });
         }
 
-        if (!ra || typeof ra !== "string" || ra.trim().length < 5) {
-            return res.status(400).json({ mensagem: "RA é obrigatório e deve ter ao menos 5 caracteres." });
+        if (!ra || typeof ra !== "number" || ra.toString().length < 1) {
+            return res.status(400).json({ mensagem: "RA é obrigatório e deve ser um número válido." });
         }
 
         if (!turma || typeof turma !== "string" || turma.trim().length < 2) {
@@ -88,7 +89,7 @@ const atualizarChamadoController = async (req, res) => {
             return res.status(400).json({ mensagem: "Nome deve ter ao menos 3 caracteres." });
         }
 
-        if (ra && (typeof ra !== "string" || ra.trim().length < 5)) {
+        if (ra && (typeof ra !== "number" || ra.toString().length < 1)) {
             return res.status(400).json({ mensagem: "RA inválido." });
         }
 

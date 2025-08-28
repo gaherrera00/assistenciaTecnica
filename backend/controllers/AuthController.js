@@ -1,6 +1,7 @@
 import { read, compare } from '../config/database.js';
 import { criarCadastro } from '../models/auth.js';
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../config/jwt.js';
 
 const cadastro = async (req, res) => {
   const { nome, email, senha, ra, funcao } = req.body;
@@ -70,11 +71,29 @@ const loginController = async (req, res) => {
     }
 
     // Gerar o token JWT
-    const token = jwt.sign({ id: usuario.id_usuario, tipo: usuario.tipo }, JWT_SECRET, {
+    const token = jwt.sign({ 
+      id: usuario.id_usuario, 
+      email: usuario.email,
+      funcao: usuario.funcao 
+    }, JWT_SECRET, {
       expiresIn: '1h',
     });
 
-    res.json({ mensagem: 'Login realizado com sucesso', token });
+    // Retornar dados do usuário (sem a senha) e o token
+    const userData = {
+      id: usuario.id_usuario,
+      nome: usuario.nome,
+      email: usuario.email,
+      ra: usuario.ra,
+      funcao: usuario.funcao,
+      status: usuario.status
+    };
+
+    res.json({ 
+      mensagem: 'Login realizado com sucesso', 
+      token,
+      user: userData
+    });
   } catch (error) {
     console.error('Erro ao fazer login:', error);
     res.status(500).json({ mensagem: 'Erro ao fazer login' });

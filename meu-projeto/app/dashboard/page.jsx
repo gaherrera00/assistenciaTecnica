@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { isAuthenticated, getUser } from "../../utils/auth";
+import { chamadoAPI } from "../../utils/api";
 
 export default function Dashboard() {
-  const [dados, setDados] = useState([]);
+  const [chamados, setChamados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
@@ -11,73 +13,45 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Verifica se o usuário está logado
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
-    
-    if (!token || !userData) {
+    if (!isAuthenticated()) {
       router.push("/login");
       return;
     }
 
-    setUser(JSON.parse(userData));
-    fetchDashboardData();
+    const userData = getUser();
+    setUser(userData);
+    fetchChamados();
   }, [router]);
 
-  const fetchDashboardData = async () => {
+  const fetchChamados = async () => {
     try {
-      const token = localStorage.getItem("token");
-      
-      const response = await fetch("/api/dashboard", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setDados(data.dados);
-      } else if (response.status === 401) {
+      const data = await chamadoAPI.listar();
+      setChamados(data);
+    } catch (err) {
+      if (err.message.includes('401') || err.message.includes('403')) {
         // Token expirado ou inválido
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         router.push("/login");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || "Erro ao carregar dados");
+        return;
       }
-    } catch (err) {
-      setError("Erro de conexão");
+      setError("Erro ao carregar chamados: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
-
   const formatDate = (dateString) => {
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleString('pt-BR');
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'pendente': return 'bg-yellow-500';
-      case 'em_andamento': return 'bg-blue-500';
-      case 'resolvido': return 'bg-green-500';
+      case 'em andamento': return 'bg-blue-500';
+      case 'concluído': return 'bg-green-500';
       default: return 'bg-gray-500';
-    }
-  };
-
-  const getPriorityColor = (prioridade) => {
-    switch (prioridade) {
-      case 'alta': return 'text-red-600';
-      case 'media': return 'text-yellow-600';
-      case 'baixa': return 'text-green-600';
-      default: return 'text-gray-600';
     }
   };
 
@@ -95,7 +69,7 @@ export default function Dashboard() {
         <div className="text-center text-white">
           <p className="text-red-200 mb-4">{error}</p>
           <button 
-            onClick={fetchDashboardData}
+            onClick={fetchChamados}
             className="px-4 py-2 bg-white text-green-800 rounded-lg hover:bg-gray-100"
           >
             Tentar novamente
@@ -105,34 +79,6 @@ export default function Dashboard() {
     );
   }
 
-  // Se não há dados, mostra mensagem apropriada
-  if (dados.length === 0) {
-    return (
-      <div className="min-h-screen bg-gradient-to-r from-[#084438] to-green-700">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-white">
-              Dashboard - {user?.name} ({user?.role})
-            </h1>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-            >
-              Sair
-            </button>
-          </div>
-          
-          <div className="text-center text-white text-xl">
-            Nenhum chamado encontrado para seu perfil.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Pega dinamicamente as colunas que vieram da API
-  const colunas = Object.keys(dados[0]);
-
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#084438] to-green-700">
       <div className="container mx-auto px-4 py-8">
@@ -140,82 +86,111 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white">
-              Dashboard - {user?.name} ({user?.role})
+              Dashboard - {user?.nome} ({user?.funcao})
             </h1>
             <p className="text-green-100 mt-2">
-              Total de chamados: {dados.length}
+              Total de chamados: {chamados.length}
             </p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-          >
-            Sair
-          </button>
         </div>
 
-        {/* Tabela Dinâmica */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  {colunas.map((coluna) => (
-                    <th
-                      key={coluna}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      {coluna.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+        {/* Tabela de Chamados */}
+        {chamados.length > 0 ? (
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ID
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {dados.map((item, index) => (
-                  <tr key={item.id || index} className="hover:bg-gray-50">
-                    {colunas.map((coluna) => (
-                      <td key={coluna} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {coluna === 'status' ? (
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full text-white ${getStatusColor(item[coluna])}`}>
-                            {item[coluna]}
-                          </span>
-                        ) : coluna === 'prioridade' ? (
-                          <span className={`font-medium ${getPriorityColor(item[coluna])}`}>
-                            {item[coluna]}
-                          </span>
-                        ) : coluna.includes('data') ? (
-                          formatDate(item[coluna])
-                        ) : coluna === 'sintomas' || coluna === 'historico' || coluna === 'detalhes' ? (
-                          <div className="max-w-xs">
-                            <p className="truncate" title={item[coluna]}>
-                              {item[coluna]}
-                            </p>
-                          </div>
-                        ) : (
-                          item[coluna]
-                        )}
-                      </td>
-                    ))}
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nome
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Sala
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      RA
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Turma
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Sintoma
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Início
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Criado em
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {chamados.map((chamado) => (
+                    <tr key={chamado.id_chamado} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {chamado.id_chamado}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {chamado.nome}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {chamado.sala}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {chamado.ra}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {chamado.turma}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        <div className="max-w-xs">
+                          <p className="truncate" title={chamado.sintoma}>
+                            {chamado.sintoma}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full text-white ${getStatusColor(chamado.status)}`}>
+                          {chamado.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(chamado.inicio)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(chamado.criado_em)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center text-white text-xl">
+            Nenhum chamado encontrado.
+          </div>
+        )}
 
-        {/* Informações do Role */}
+        {/* Informações do Perfil */}
         <div className="mt-8 bg-white rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Informações do seu perfil ({user?.role})
+            Informações do seu perfil ({user?.funcao})
           </h3>
           <div className="text-sm text-gray-600">
-            {user?.role === 'admin' && (
+            {user?.funcao === 'gerente' && (
               <p>Você tem acesso ao resumo de todos os chamados do sistema.</p>
             )}
-            {user?.role === 'tecnico' && (
+            {user?.funcao === 'tecnico' && (
               <p>Você tem acesso completo a todos os chamados, incluindo sintomas, histórico e detalhes técnicos.</p>
             )}
-            {user?.role === 'user' && (
+            {user?.funcao === 'aluno' && (
               <p>Você pode visualizar apenas os seus próprios chamados.</p>
             )}
           </div>
