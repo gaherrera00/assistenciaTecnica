@@ -15,7 +15,7 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("../../../backend/AuthController.js", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export default function Login() {
               placeholder="Senha"
               required
               value={password}
-              onChange={(e) => setSenha(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
             />
           </div>
