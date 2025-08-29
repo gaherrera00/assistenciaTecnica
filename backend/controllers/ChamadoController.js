@@ -3,7 +3,26 @@ import { read } from '../config/database.js';
 
 const listarChamadosController = async (req, res) => {
     try {
-        const chamados = await listarChamados();
+        // Verificar se o usuário está autenticado
+        if (!req.user) {
+            return res.status(401).json({ mensagem: 'Usuário não autenticado' });
+        }
+
+        const { funcao, ra } = req.user;
+        let chamados;
+
+        // Filtrar chamados baseado na função do usuário
+        if (funcao === 'aluno') {
+            // Alunos veem apenas seus próprios chamados
+            chamados = await listarChamados(`ra = '${ra}'`);
+        } else if (funcao === 'tecnico' || funcao === 'técnico' || funcao === 'gerente' || funcao === 'administrador') {
+            // Técnicos, gerentes e administradores veem todos os chamados
+            chamados = await listarChamados();
+        } else {
+            console.log('Função não reconhecida:', funcao);
+            return res.status(403).json({ mensagem: `Função não autorizada: ${funcao}` });
+        }
+
         res.status(200).json(chamados);
     } catch (err) {
         console.error('Erro ao listar chamados: ', err);
@@ -88,9 +107,21 @@ const criarChamadoController = async (req, res) => {
 
 const atualizarChamadoController = async (req, res) => {
     try {
-        const chamadoId = req.params.id;
-        const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        // Verificar se o usuário está autenticado
+        if (!req.user) {
+            return res.status(401).json({ mensagem: 'Usuário não autenticado' });
+        }
 
+        const chamadoId = req.params.id;
+        const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico, status } = req.body;
+        const { funcao } = req.user;
+
+        // Verificar permissões baseado na função
+        if (funcao === 'aluno') {
+            return res.status(403).json({ mensagem: 'Alunos não podem atualizar chamados' });
+        }
+
+        // Validações
         if (nome && (typeof nome !== "string" || nome.trim().length < 3)) {
             return res.status(400).json({ mensagem: "Nome deve ter ao menos 3 caracteres." });
         }
@@ -123,6 +154,11 @@ const atualizarChamadoController = async (req, res) => {
             return res.status(400).json({ mensagem: "Histórico deve ser texto." });
         }
 
+        // Validar status se fornecido
+        if (status && !['pendente', 'em andamento', 'concluído'].includes(status)) {
+            return res.status(400).json({ mensagem: "Status inválido." });
+        }
+
         // monta o objeto com os dados
         const chamadoData = {
             nome: nome ?? null,
@@ -133,8 +169,16 @@ const atualizarChamadoController = async (req, res) => {
             detalhes: detalhes ?? null,
             inicio: inicio ?? null,
             frequencia: frequencia ?? null,
-            historico: historico ?? null
+            historico: historico ?? null,
+            status: status ?? null
         };
+
+        // Remover campos undefined/null
+        Object.keys(chamadoData).forEach(key => {
+            if (chamadoData[key] === null || chamadoData[key] === undefined) {
+                delete chamadoData[key];
+            }
+        });
 
         await atualizarChamado(chamadoId, chamadoData);
         res.status(201).json({ mensagem: 'Chamado alterado com sucesso.' });

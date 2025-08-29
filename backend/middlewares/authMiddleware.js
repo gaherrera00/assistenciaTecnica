@@ -12,7 +12,12 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.usuarioId = decoded.id;
+    req.user = {
+      id: decoded.id,
+      email: decoded.email,
+      funcao: decoded.funcao,
+      ra: decoded.ra
+    };
     next();
   } catch (error) {
     return res.status(403).json({ mensagem: 'Não autorizado: Token inválido' });

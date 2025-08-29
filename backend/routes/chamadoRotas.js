@@ -1,7 +1,11 @@
 import express from 'express';
 import { listarChamadosController, obterChamadoPorIdController, criarChamadoController, atualizarChamadoController, excluirChamadoController } from '../controllers/ChamadoController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
+
+// Aplicar middleware de autenticação em todas as rotas
+router.use(authMiddleware);
 
 router.get('/', listarChamadosController);
 router.get('/:id', obterChamadoPorIdController);
