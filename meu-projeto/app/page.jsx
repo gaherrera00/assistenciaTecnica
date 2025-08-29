@@ -60,7 +60,7 @@ export default function Home() {
             {
               icon: "wrench.png",
               title: "Profissionais Qualificados",
-              desc: "Equipe com mais de 15 anos de experiência.",
+              desc: "Equipe com mais de 80 anos de experiência.",
             },
             {
               icon: "dollar.png",
