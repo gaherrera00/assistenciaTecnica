@@ -87,6 +87,11 @@ export default function Login() {
               value={formData.senha}
               onChange={handleChange}
               required
+<<<<<<< Updated upstream
+=======
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+>>>>>>> Stashed changes
               className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
             />
           </div>
