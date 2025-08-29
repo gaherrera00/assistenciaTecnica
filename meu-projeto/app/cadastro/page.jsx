@@ -17,30 +17,27 @@ export default function Cadastro() {
   const [success, setSuccess] = useState("");
   const router = useRouter();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
     setSuccess("");
 
+    if (!/^\d{8}$/.test(formData.ra)) {
+      setError("O RA deve conter exatamente 8 números.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      // Converter RA para número se não estiver vazio
       const cadastroData = {
         ...formData,
-        ra: formData.ra ? parseInt(formData.ra) : null,
+        ra: parseInt(formData.ra),
       };
 
       await authAPI.cadastro(cadastroData);
       setSuccess("Cadastro realizado com sucesso! Redirecionando...");
-      
-      // Redirecionar para login após 2 segundos
+
       setTimeout(() => {
         router.push("/login");
       }, 2000);
@@ -110,15 +107,20 @@ export default function Cadastro() {
             RA
           </label>
           <input
-            type="number"
+            type="text"
             id="ra"
-            placeholder="Seu RA (número)"
+            placeholder="Seu RA (8 dígitos)"
             value={formData.ra}
-            onChange={handleChange}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, "");
+              if (value.length <= 8) {
+                setFormData({ ...formData, ra: value });
+              }
+            }}
             required
+            maxLength={8}
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
-
           {/* Senha */}
           <label htmlFor="senha" className="sr-only">
             Senha

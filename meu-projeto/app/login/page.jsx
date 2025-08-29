@@ -28,7 +28,7 @@ export default function Login() {
 
     try {
       const response = await authAPI.login(formData);
-      
+
       if (response.token) {
         setAuthToken(response.token);
         setUser(response.user || { email: formData.email });
@@ -87,11 +87,6 @@ export default function Login() {
               value={formData.senha}
               onChange={handleChange}
               required
-<<<<<<< Updated upstream
-=======
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
->>>>>>> Stashed changes
               className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
             />
           </div>
@@ -114,13 +109,6 @@ export default function Login() {
           <div className="mt-5 text-sm text-gray-600 tracking-tight">
             Ainda não tem uma conta?
           </div>
-
-          <Link
-            href="/cadastro"
-            className="p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm cursor-pointer text-black hover:bg-gray-100 transition-colors inline-block"
-          >
-            Criar conta
-          </Link>
         </form>
       </div>
     </div>
