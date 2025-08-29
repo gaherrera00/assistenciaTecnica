@@ -109,11 +109,7 @@ const loginController = async (req, res) => {
       status: usuario.status
     };
 
-    res.json({ 
-      mensagem: 'Login realizado com sucesso', 
-      token,
-      user: userData
-    });
+    res.json({ mensagem: 'Login realizado com sucesso', token, user: userData});
   } catch (error) {
     console.error('Erro ao fazer login:', error);
     res.status(500).json({ mensagem: 'Erro ao fazer login' });
