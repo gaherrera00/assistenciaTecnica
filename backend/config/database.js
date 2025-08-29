@@ -44,7 +44,14 @@ async function read(table, where) {
         }
 
         const [rows] = await connection.execute(sql);
-        return rows[0] || null;
+        
+        // Para busca por email, retornar o primeiro resultado
+        if (where && where.includes('email')) {
+            return rows[0] || null;
+        }
+        
+        // Para outras buscas, retornar todos os resultados
+        return rows;
     } finally {
         connection.release();
     }
