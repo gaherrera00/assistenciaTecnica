@@ -27,7 +27,7 @@ export default function ChamadosUser() {
     historico: "",
   });
 
-  const handleFileChange = (e) => {
+  const FileChange = (e) => {
     const files = Array.from(e.target.files);
     const urls = files.map((file) => URL.createObjectURL(file));
     setPreviews(urls);
@@ -43,7 +43,22 @@ export default function ChamadosUser() {
 
   const handleSubmitStep1 = (e) => {
     e.preventDefault();
-    setStep(2); // passa para o segundo formulário
+
+    // Validação da sala
+    const salaRegex = /^[0-2][A-D]-(?:[1-9]|1\d|20)$/;
+    if (!salaRegex.test(userData.sala)) {
+      setError("A sala deve estar no formato correto (ex: 1B-12).");
+      return;
+    }
+
+    // Validação do RA (8 dígitos)
+    if (!/^\d{8}$/.test(userData.ra)) {
+      setError("O RA deve conter exatamente 8 números.");
+      return;
+    }
+
+    setError("");
+    setStep(2);
   };
 
   const handleSubmitStep2 = async (e) => {
@@ -58,19 +73,22 @@ export default function ChamadosUser() {
         ...userData,
         ...chamadoData,
         status: "pendente",
-        dataCriacao: new Date().toISOString()
+        dataCriacao: new Date().toISOString(),
       };
 
       const token = localStorage.getItem("token");
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chamado`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        body: JSON.stringify(chamadoCompleto),
-      });
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/chamado`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+          body: JSON.stringify(chamadoCompleto),
+        }
+      );
 
       const data = await response.json();
 
@@ -79,7 +97,14 @@ export default function ChamadosUser() {
         setTimeout(() => {
           setStep(1);
           setUserData({ nome: "", sala: "", ra: "", turma: "" });
-          setChamadoData({ idMaquina: "", sintoma: "", detalhes: "", inicio: "", frequencia: "", historico: "" });
+          setChamadoData({
+            idMaquina: "",
+            sintoma: "",
+            detalhes: "",
+            inicio: "",
+            frequencia: "",
+            historico: "",
+          });
           setPreviews([]);
         }, 2000);
       } else {
@@ -143,9 +168,16 @@ export default function ChamadosUser() {
               <input
                 type="text"
                 id="sala"
+                placeholder="Ex: 1B-12"
                 value={userData.sala}
-                onChange={handleUserChange}
-                placeholder="Ex.: 2D-6"
+                onChange={(e) => {
+                  let value = e.target.value.toUpperCase();
+
+                  // Permite só caracteres válidos (0–2, A–D, -, dígitos)
+                  value = value.replace(/[^0-2A-D\-0-9]/gi, "");
+
+                  setUserData({ ...userData, sala: value });
+                }}
                 required
                 className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
               />
@@ -154,15 +186,20 @@ export default function ChamadosUser() {
                 RA
               </label>
               <input
-                type="number"
+                type="text"
                 id="ra"
+                placeholder="Ex.: 12345678"
                 value={userData.ra}
-                onChange={handleUserChange}
-                placeholder="Ex.: 123456789"
+                onChange={(e) => {
+                  let value = e.target.value.replace(/\D/g, ""); // só números
+                  if (value.length <= 8) {
+                    setUserData({ ...userData, ra: value });
+                  }
+                }}
                 required
+                maxLength={8}
                 className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
               />
-
               <label className="text-gray-800 text-sm font-medium mb-1 block">
                 Turma
               </label>
