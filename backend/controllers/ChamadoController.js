@@ -39,8 +39,8 @@ const criarChamadoController = async (req, res) => {
         }
 
         const validarPatrimonio = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
-        if (id_patrimonio != validarPatrimonio) {
-            return res.status(400).json({ mensagem: "Patrimonio não encontrado." });
+        if (!validarPatrimonio || validarPatrimonio.length === 0) {
+            return res.status(400).json({ mensagem: "Patrimônio não encontrado." });
         }
 
         if (!sintoma || typeof sintoma !== "string" || sintoma.trim().length < 5) {
@@ -75,9 +75,7 @@ const criarChamadoController = async (req, res) => {
             frequencia: frequencia ?? null,
             historico: historico ?? null
         };
-        console.log(chamadoData);
         
-    
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso.', chamadoId });
     } catch (err) {

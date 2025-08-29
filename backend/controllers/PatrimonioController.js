@@ -1,5 +1,3 @@
-import PDFDocument from 'pdfkit';
-import fs from 'fs';
 import { listarPatrimonios, obterPatrimonioPorId, criarPatrimonio, atualizarPatrimonio, excluirPatrimonio } from "../models/patrimonio.js";
 
 const listarPatrimoniosController = async (req, res) => {
@@ -14,7 +12,8 @@ const listarPatrimoniosController = async (req, res) => {
 
 const obterPatrimonioPorIdController = async (req, res) => {
     try {
-    patrimonios = await obterPatrimonioPorId(id);
+    const id = req.params.id;
+    const patrimonios = await obterPatrimonioPorId(id);
     res.status(200).json(patrimonios);
     } catch (err) {
         console.error('Erro ao obter patrimonio por ID: ', err);
@@ -55,28 +54,8 @@ const criarPatrimonioController = async (req, res) => {
             data_aquisicao: data_aquisicao || null,
             observacoes: observacoes || null
         };
-
-        const patrimonioId = await criarPatrimonio(patrimonioData);
-        
-        // Agora cria o PDF com base no patrimônio recém-criado
-        const patrimonio = await obterPatrimonioPorId(patrimonioId);  // Recupera o patrimônio recém-criado
-
-        // Cria o documento PDF
-        const doc = new PDFDocument();
-
-        // Configuração do PDF
-        doc.fontSize(18).text('Relatório de Apontamento de Chamada', { align: 'center' });
-        doc.fontSize(14).text(`Tipo de item: ${patrimonio.tipo_item}`);
-        doc.text(`Sala: ${patrimonio.sala}`);
-        doc.text(`Data de Aquisição: ${patrimonio.data_aquisicao || 'Não informada'}`);
-        doc.text(`Observações: ${patrimonio.observacoes || 'Sem observações'}`);
-        
-        // Envia o PDF como resposta ao cliente
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=apontamento.pdf');
-        doc.pipe(res); // O arquivo PDF será enviado como resposta
-        doc.end(); // Finaliza o PDF
     
+        const patrimonioId = await criarPatrimonio(patrimonioData);
         res.status(201).json({ mensagem: 'Patrimonio criado com sucesso.', patrimonioId });
     } catch (err) {
         console.error('Erro ao criar patrimonio: ', err);
@@ -115,32 +94,7 @@ const atualizarPatrimonioController = async (req, res) => {
             observacoes: observacoes || null
         };
 
-          // Atualiza o patrimônio no banco de dados
-          await atualizarPatrimonio(patrimonioId, patrimonioData);
-
-          // Após a atualização, recupera o patrimônio atualizado para gerar o novo PDF
-          const patrimonioAtualizado = await obterPatrimonioPorId(patrimonioId);
-  
-          if (!patrimonioAtualizado) {
-              return res.status(404).json({ mensagem: 'Patrimônio não encontrado após atualização.' });
-          }
-  
-          // Cria um novo documento PDF com as informações atualizadas
-          const doc = new PDFDocument();
-  
-          // Configuração do PDF
-          doc.fontSize(18).text('Relatório de Apontamento de Chamada Atualizado', { align: 'center' });
-          doc.fontSize(14).text(`Tipo de item: ${patrimonioAtualizado.tipo_item}`);
-          doc.text(`Sala: ${patrimonioAtualizado.sala}`);
-          doc.text(`Data de Aquisição: ${patrimonioAtualizado.data_aquisicao || 'Não informada'}`);
-          doc.text(`Observações: ${patrimonioAtualizado.observacoes || 'Sem observações'}`);
-  
-          // Envia o PDF com as informações atualizadas como resposta
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', 'attachment; filename=apontamento_atualizado.pdf');
-          doc.pipe(res);  // O PDF gerado será enviado na resposta
-          doc.end();  // Finaliza o documento PDF
-          
+        await atualizarPatrimonio(patrimonioId, patrimonioData);
         res.status(201).json({ mensagem: 'Patrimonio alterado com sucesso.' });
     } catch (err) {
         console.error('Erro ao atualizar patrimonio: ', err);

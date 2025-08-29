@@ -1,5 +1,7 @@
 import { listarApontamentos, obterApontamentoPorId, criarApontamento, excluirApontamento } from '../models/apontamentos.js';
 import { read } from '../config/database.js';
+import PDFDocument from 'pdfkit';
+import fs from 'fs';
 
 const listarApontamentosController = async (req, res) => {
     try {
@@ -13,6 +15,7 @@ const listarApontamentosController = async (req, res) => {
 
 const obterApontamentoPorIdController = async (req, res) => {
     try {
+        const id = req.params.id;
         const apontamentos = await obterApontamentoPorId(id);
         res.status(200).json(apontamentos);
     } catch (err) {
@@ -26,7 +29,7 @@ const criarApontamentoController = async (req, res) => {
         const { id_chamado, id_tecnico, descricao, comeco, fim, duracao, criado_em } = req.body;
 
         const verificarChamado = await read('chamados', `id_chamado = '${id_chamado}'`);
-        if (id_chamado != verificarChamado) {
+        if (!verificarChamado || verificarChamado.length === 0) {
             return res.status(400).json({ mensagem: "Chamado inexistente." });
         }
 
@@ -69,7 +72,27 @@ const criarApontamentoController = async (req, res) => {
             criado_em: criado_em
         }
 
-        const apontamentoId = await criarApontamento(apontamentoData);
+        const apontamentoId = await criarPatrimonio(apontamentoData);
+        
+        // Agora cria o PDF com base no patrimônio recém-criado
+        const apontamento = await obterPatrimonioPorId(apontamentoId);  // Recupera o patrimônio recém-criado
+
+        // Cria o documento PDF
+        const doc = new PDFDocument();
+
+        // Configuração do PDF
+        doc.fontSize(18).text('Relatório de Apontamento de Chamada', { align: 'center' });
+        doc.fontSize(14).text(`Tipo de item: ${patrimonio.tipo_item}`);
+        doc.text(`Sala: ${patrimonio.sala}`);
+        doc.text(`Data de Aquisição: ${patrimonio.data_aquisicao || 'Não informada'}`);
+        doc.text(`Observações: ${patrimonio.observacoes || 'Sem observações'}`);
+        
+        // Envia o PDF como resposta ao cliente
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=apontamento.pdf');
+        doc.pipe(res); // O arquivo PDF será enviado como resposta
+        doc.end(); // Finaliza o PDF
+        
         res.status(201).json({ mensagem: 'Apontamento criado com sucesso.', apontamentoId});
     } catch (err) {
         console.error('Erro ao criar apontamentos: ', err);

@@ -12,7 +12,8 @@ const listarPoolController = async (req, res) => {
 
 const obterPoolPorIdController = async (req, res) => {
     try {
-    pool = await obterPoolPorId(id);
+    const id = req.params.id;
+    const pool = await obterPoolPorId(id);
     res.status(200).json(pool);
     } catch (err) {
         console.error('Erro ao obter pool por ID: ', err);
