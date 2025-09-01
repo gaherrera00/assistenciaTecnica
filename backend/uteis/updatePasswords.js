@@ -1,5 +1,5 @@
-import { read, update } from './config/database.js';
-import { generateHashedPassword } from './uteis/hashPassword.js';
+import { read, update } from '../config/database.js';
+import { generateHashedPassword } from './hashPassword.js';
 
 async function updateExistingPasswords() {
   try {

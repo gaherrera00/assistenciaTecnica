@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/jwt.js';
 
 const cadastro = async (req, res) => {
-  const { nome, email, senha, ra, funcao } = req.body;
+  const { nome, email, ra, senha, funcao } = req.body;
   try {
     const usuario = await read('usuarios', `email = '${email}'`);
 
