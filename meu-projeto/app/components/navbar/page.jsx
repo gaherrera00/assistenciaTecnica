@@ -85,19 +85,30 @@ export default function Header() {
 
                 {/* Dropdown menu */}
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                     {/* Cabeçalho do usuário */}
                     <div className="px-4 py-3 border-b border-gray-100">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-[#084438] rounded-full flex items-center justify-center text-white font-semibold text-lg">
                           {user.nome ? user.nome.charAt(0).toUpperCase() : 'U'}
                         </div>
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900">{user.nome}</p>
-                          <p className="text-xs text-gray-500">{user.email}</p>
-                          {user.tipo && (
-                            <p className="text-xs text-[#084438] font-medium capitalize">{user.tipo}</p>
-                          )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{user.nome}</p>
+                          <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            {user.funcao && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#084438] text-white capitalize">
+                                {user.funcao === 'aluno' ? 'Aluno' : 
+                                 user.funcao === 'tecnico' ? 'Técnico' : 
+                                 user.funcao === 'gerente' ? 'Administrador' : user.funcao}
+                              </span>
+                            )}
+                            {user.funcao === 'aluno' && user.ra && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                RA: {user.ra}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
