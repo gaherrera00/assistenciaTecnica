@@ -12,22 +12,6 @@ const cadastro = async (req, res) => {
       return res.status(400).json({ mensagem: 'Email já cadastrado!' })
     }
 
-    // Validação da senha
-    if (senha.length < 6 || senha.length > 8) {
-      return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
-    }
-
-    let temNumero = false;
-    for (let i = 0; i < senha.length; i++) {
-      if (!isNaN(senha[i]) && senha[i] !== ' ') {
-        temNumero = true;
-        break;
-      }
-    }
-    if (!temNumero) {
-      return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
-    }
-
     let raFinal = null;
 
     if (funcao === 'aluno') {
@@ -49,6 +33,22 @@ const cadastro = async (req, res) => {
       raFinal = null;
     }
 
+    // Validação da senha
+    if (senha.length < 6 || senha.length > 8) {
+      return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
+    }
+
+    let temNumero = false;
+    for (let i = 0; i < senha.length; i++) {
+      if (!isNaN(senha[i]) && senha[i] !== ' ') {
+        temNumero = true;
+        break;
+      }
+    }
+    if (!temNumero) {
+      return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
+    }
+
     const verificarFuncao = ['aluno', 'tecnico', 'gerente'];
 
     if (!verificarFuncao.includes(funcao)) {
@@ -58,8 +58,8 @@ const cadastro = async (req, res) => {
     const cadastroData = {
       nome: nome,
       email: email, 
-      senha: senha,
       ra: ra,
+      senha: senha,
       funcao: funcao
     };
     
