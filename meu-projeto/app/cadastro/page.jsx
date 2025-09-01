@@ -17,6 +17,14 @@ export default function Cadastro() {
   const [success, setSuccess] = useState("");
   const router = useRouter();
 
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
