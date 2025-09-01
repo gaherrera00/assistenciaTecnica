@@ -12,6 +12,7 @@ const listarUsuariosController = async (req, res) => {
 
 const obterUsuarioPorIdController = async (req, res) => {
     try {
+        const id = req.params.id;
         const usuario = await obterUsuarioPorId(id);
         res.status(200).json(usuario);
     } catch (err) {
