@@ -1,1 +1,1 @@
-export const JWT_SECRET = process.env.JWT_SECRET || 'SEGREDO_PADRAO_ALTERAR_EM_PRODUCAO';
+export const JWT_SECRET = process.env.JWT_SECRET || 'SECRECT';

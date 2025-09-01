@@ -19,17 +19,20 @@ const cadastro = async (req, res) => {
         return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
       }
 
+      // Normaliza RA → garante 8 dígitos preenchendo com zeros à esquerda
+      const raNormalizado = ra.toString().padStart(8, '0');
+
       // Verifica se RA já existe
-      const usuarioComRa = await read('usuarios', `ra = '${ra}'`);
+      const usuarioComRa = await read('usuarios', `ra = '${raNormalizado}'`);
       if (usuarioComRa && usuarioComRa.length > 0) {
         return res.status(400).json({ mensagem: 'RA já cadastrado!' });
       }
 
-      raFinal = ra;
+      raFinal = raNormalizado;
     }
 
-    // Técnico e Gerente → RA fica NULL
-    if (funcao === 'tecnico' || funcao === 'gerente') {
+    // Técnico e Adm → RA fica NULL
+    if (funcao === 'tecnico' || funcao === 'adm') {
       raFinal = null;
     }
 
@@ -37,7 +40,7 @@ const cadastro = async (req, res) => {
     if (senha.length < 6 || senha.length > 8) {
       return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
     }
-
+    
     let temNumero = false;
     for (let i = 0; i < senha.length; i++) {
       if (!isNaN(senha[i]) && senha[i] !== ' ') {
@@ -49,7 +52,7 @@ const cadastro = async (req, res) => {
       return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
     }
 
-    const verificarFuncao = ['aluno', 'tecnico', 'gerente'];
+    const verificarFuncao = ['aluno', 'tecnico', 'adm'];
 
     if (!verificarFuncao.includes(funcao)) {
       return res.status(400).json({ mensagem: 'Esta função não existe.' })
@@ -58,7 +61,7 @@ const cadastro = async (req, res) => {
     const cadastroData = {
       nome: nome,
       email: email, 
-      ra: ra,
+      ra: raFinal, // usa o RA já validado e formatado
       senha: senha,
       funcao: funcao
     };
@@ -69,27 +72,24 @@ const cadastro = async (req, res) => {
     console.error('Erro ao cadastrar usuario: ', err);
     res.status(500).json({ mensagem: 'Erro ao cadastrar usuario.' });
   }
-}
+};
 
 const loginController = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
-    // Verificar se o usuário existe no banco de dados
     const usuario = await read('usuarios', `email = '${email}'`);
 
     if (!usuario) {
       return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     }
 
-    // Verificar se a senha está correta (comparar a senha enviada com o hash armazenado)
     const senhaCorreta = await compare(senha, usuario.senha);
 
     if (!senhaCorreta) {
       return res.status(401).json({ mensagem: 'Senha ou email incorreto' });
     }
 
-    // Gerar o token JWT
     const token = jwt.sign({ 
       id: usuario.id_usuario, 
       email: usuario.email,
@@ -99,7 +99,6 @@ const loginController = async (req, res) => {
       expiresIn: '1h',
     });
 
-    // Retornar dados do usuário (sem a senha) e o token
     const userData = {
       id: usuario.id_usuario,
       nome: usuario.nome,

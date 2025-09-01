@@ -32,7 +32,7 @@ const listarChamadosController = async (req, res) => {
 
 const obterChamadoPorIdController = async (req, res) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id;
         const chamado = await obterChamadoPorId(id);
         res.status(200).json(chamado);
     } catch (err) {

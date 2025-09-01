@@ -93,7 +93,7 @@ const criarApontamentoController = async (req, res) => {
         doc.pipe(res); // O arquivo PDF será enviado como resposta
         doc.end(); // Finaliza o PDF
         
-        res.status(201).json({ mensagem: 'Apontamento criado com sucesso.', apontamentoId});
+        res.status(201).json({ mensagem: 'Apontamento criado com sucesso.', apontamento});
     } catch (err) {
         console.error('Erro ao criar apontamentos: ', err);
         res.status(500).json({ mensagem: 'Erro ao criar apontamentos.' });
