@@ -57,7 +57,7 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 mt-20">
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-sm w-full text-center">
         <div className="mb-6">
           <img
@@ -125,7 +125,7 @@ export default function Cadastro() {
                 setFormData({ ...formData, ra: value });
               }
             }}
-            required
+            
             maxLength={8}
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
@@ -159,7 +159,7 @@ export default function Cadastro() {
             <option value="">Selecione sua função</option>
             <option value="aluno">Aluno</option>
             <option value="tecnico">Técnico</option>
-            <option value="gerente">Gerente</option>
+            <option value="administrador">Administrador</option>
           </select>
 
           {/* Botão de cadastro */}

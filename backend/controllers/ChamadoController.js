@@ -27,7 +27,7 @@ const listarChamadosController = async (req, res) => {
         res.status(200).json(chamados);
     } catch (err) {
         console.error('Erro ao listar chamados: ', err);
-        res.status(500).json({ mensagem: 'Erro ao listar chamados. '});
+        res.status(500).json({ mensagem: 'Erro ao listar chamados. ' });
     };
 };
 
@@ -95,7 +95,14 @@ const criarChamadoController = async (req, res) => {
             frequencia: frequencia ?? null,
             historico: historico ?? null
         };
-        
+
+        // Verificar se o RA existe na tabela de usuários
+        const usuarioExiste = await read('usuarios', `ra = '${ra}'`);
+        if (!usuarioExiste || usuarioExiste.length === 0) {
+            return res.status(400).json({ mensagem: "RA informado não pertence a nenhum usuário cadastrado." });
+        }
+
+
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso.', chamadoId });
     } catch (err) {
@@ -200,7 +207,7 @@ const excluirChamadoController = async (req, res) => {
         }
 
         const chamadoId = req.params.id;
-        
+
         // Verificar se o chamado existe
         const chamado = await read('chamados', `id_chamado = ${chamadoId}`);
         if (!chamado || chamado.length === 0) {
@@ -211,13 +218,13 @@ const excluirChamadoController = async (req, res) => {
         if (chamado[0].status !== 'em andamento') {
             return res.status(400).json({ mensagem: 'Apenas chamados em andamento podem ser excluídos' });
         }
-        
+
         // Primeiro, excluir todos os apontamentos relacionados ao chamado
         await deleteRecord('apontamentos', `id_chamado = ${chamadoId}`);
-        
+
         // Depois, excluir o chamado
         await excluirChamado(chamadoId);
-        
+
         res.status(200).json({ mensagem: 'Chamado excluído com sucesso.' });
     } catch (err) {
         console.error('Erro ao excluir chamado: ', err);
