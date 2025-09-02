@@ -27,7 +27,7 @@ export default function ChamadosUser() {
     historico: "",
   });
 
-  const FileChange = (e) => {
+  const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     const urls = files.map((file) => URL.createObjectURL(file));
     setPreviews(urls);
@@ -45,9 +45,9 @@ export default function ChamadosUser() {
     e.preventDefault();
 
     // Validação da sala
-    const salaRegex = /^[0-2][A-D]-(?:[1-9]|1\d|20)$/;
+    const salaRegex = /^[0-2][A-D]-(?:[1-9])$/;
     if (!salaRegex.test(userData.sala)) {
-      setError("A sala deve estar no formato correto (ex: 1B-12).");
+      setError("A sala deve estar no formato correto (ex: 1B-9).");
       return;
     }
 
@@ -70,25 +70,28 @@ export default function ChamadosUser() {
     try {
       // Combina os dados do usuário com os dados do chamado
       const chamadoCompleto = {
-        ...userData,
-        ...chamadoData,
-        status: "pendente",
-        dataCriacao: new Date().toISOString(),
+        nome: userData.nome,
+        ra: parseInt(userData.ra), // Converte para número
+        turma: userData.turma,
+        sala: userData.sala,
+        id_patrimonio: parseInt(chamadoData.idMaquina) || 1, // Converte para número e usa nome correto, padrão 1
+        sintoma: chamadoData.sintoma,
+        detalhes: chamadoData.detalhes,
+        inicio: chamadoData.inicio || new Date().toISOString(),
+        frequencia: chamadoData.frequencia,
+        historico: chamadoData.historico,
       };
 
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chamado`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-          body: JSON.stringify(chamadoCompleto),
-        }
-      );
+      const response = await fetch(`http://localhost:3001/chamado`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify(chamadoCompleto),
+      });
 
       const data = await response.json();
 
@@ -108,10 +111,14 @@ export default function ChamadosUser() {
           setPreviews([]);
         }, 2000);
       } else {
+        console.error("Erro do servidor:", data);
         setError(data.mensagem || "Erro ao enviar chamado");
       }
     } catch (err) {
-      setError("Erro de conexão. Tente novamente.");
+      console.error("Erro de conexão:", err);
+      setError(
+        "Erro de conexão. Verifique se o servidor está rodando e tente novamente."
+      );
     } finally {
       setLoading(false);
     }
@@ -273,11 +280,11 @@ export default function ChamadosUser() {
                 Início / Há quanto tempo
               </label>
               <input
-                type="text"
+                type="date"
                 id="inicio"
                 value={chamadoData.inicio}
                 onChange={handleChamadoChange}
-                placeholder="Ex.: Começou ontem, há 2 dias, após atualização"
+                placeholder="Ex.: 11/08/2025"
                 className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
               />
 
@@ -304,44 +311,19 @@ export default function ChamadosUser() {
                 rows={3}
                 className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black resize-none"
               />
-
-              {/* Upload múltiplo */}
-              <input
-                type="file"
-                id="fotos"
-                name="fotos"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <label
-                htmlFor="fotos"
-                className="p-3 bg-[#084438] text-white border-none rounded-lg text-base cursor-pointer hover:bg-green-800 transition-colors text-center"
-              >
-                Anexar imagens
-              </label>
-
-              {/* Miniaturas */}
-              {previews.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2 justify-center">
-                  {previews.map((src, index) => (
-                    <img
-                      key={index}
-                      src={src}
-                      alt={`Pré-visualização ${index + 1}`}
-                      className="w-20 h-20 object-cover rounded-lg border"
-                    />
-                  ))}
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={loading}
                 className="mt-4 p-3 bg-[#084438] text-white border-none rounded-lg text-base cursor-pointer hover:bg-green-800 transition-colors w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Enviando..." : "Enviar Chamado"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="mt-2 p-3 bg-gray-500 text-white border-none rounded-lg text-base cursor-pointer hover:bg-gray-700 transition-colors w-full"
+              >
+                Voltar
               </button>
             </form>
           )}

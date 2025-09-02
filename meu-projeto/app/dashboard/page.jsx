@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
+  const [chamadoAtribuido, setChamadoAtribuido] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -43,6 +44,15 @@ export default function Dashboard() {
   };
 
   const handleAceitarChamado = async (chamadoId) => {
+    // Verificar se o técnico já tem um chamado atribuído
+    if (user?.funcao === "tecnico" || user?.funcao === "técnico") {
+      const chamadoAtual = chamados.find(c => c.status === "em andamento");
+      if (chamadoAtual && chamadoAtual.id_chamado !== chamadoId) {
+        alert("Você já tem um chamado em andamento. Finalize o chamado atual antes de aceitar outro.");
+        return;
+      }
+    }
+
     try {
       setLoading(true);
       // Atualizar o status do chamado para "em andamento"
@@ -55,6 +65,60 @@ export default function Dashboard() {
       alert("Chamado aceito com sucesso!");
     } catch (err) {
       setError("Erro ao aceitar chamado: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExcluirChamado = async (chamadoId) => {
+    if (!confirm("Tem certeza que deseja excluir este chamado? Esta ação não pode ser desfeita.")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await chamadoAPI.deletar(chamadoId);
+      
+      // Recarregar os chamados para mostrar a atualização
+      await fetchChamados();
+      
+      alert("Chamado excluído com sucesso!");
+    } catch (err) {
+      console.error("Erro detalhado:", err);
+      let errorMessage = "Erro ao excluir chamado";
+      
+      if (err.message.includes("403")) {
+        errorMessage = "Você não tem permissão para excluir chamados";
+      } else if (err.message.includes("404")) {
+        errorMessage = "Chamado não encontrado";
+      } else if (err.message.includes("400")) {
+        errorMessage = "Apenas chamados em andamento podem ser excluídos";
+      } else if (err.message.includes("401")) {
+        errorMessage = "Sessão expirada. Faça login novamente";
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        router.push("/login");
+        return;
+      }
+      
+      setError(errorMessage);
+      alert(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAlterarStatus = async (chamadoId, novoStatus) => {
+    try {
+      setLoading(true);
+      await chamadoAPI.atualizar(chamadoId, { status: novoStatus });
+      
+      // Recarregar os chamados para mostrar a atualização
+      await fetchChamados();
+      
+      alert(`Status alterado para "${novoStatus}" com sucesso!`);
+    } catch (err) {
+      setError("Erro ao alterar status: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -231,6 +295,9 @@ export default function Dashboard() {
                     Gerencie e aceite chamados pendentes com informações
                     técnicas completas
                   </p>
+                  <p className="text-green-500 text-xs mt-1">
+                    ⚠️ Você pode aceitar apenas 1 chamado por vez
+                  </p>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
@@ -345,26 +412,46 @@ export default function Dashboard() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {chamado.status === "pendente" && (
-                              <button
-                                onClick={() =>
-                                  handleAceitarChamado(chamado.id_chamado)
-                                }
-                                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
-                              >
-                                Aceitar
-                              </button>
-                            )}
-                            {chamado.status === "em andamento" && (
-                              <span className="text-blue-600 text-xs">
-                                Em atendimento
-                              </span>
-                            )}
-                            {chamado.status === "concluído" && (
-                              <span className="text-green-600 text-xs">
-                                Finalizado
-                              </span>
-                            )}
+                            <div className="flex flex-col gap-1">
+                              {chamado.status === "pendente" && (
+                                <button
+                                  onClick={() =>
+                                    handleAceitarChamado(chamado.id_chamado)
+                                  }
+                                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
+                                >
+                                  Aceitar
+                                </button>
+                              )}
+                              {chamado.status === "em andamento" && (
+                                <>
+                                  <button
+                                    onClick={() =>
+                                      handleAlterarStatus(chamado.id_chamado, "pendente")
+                                    }
+                                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
+                                  >
+                                    Voltar para Pendente
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleAlterarStatus(chamado.id_chamado, "concluído")
+                                    }
+                                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
+                                  >
+                                    Finalizar
+                                  </button>
+                                  <span className="text-blue-600 text-xs text-center">
+                                    Em atendimento
+                                  </span>
+                                </>
+                              )}
+                              {chamado.status === "concluído" && (
+                                <span className="text-green-600 text-xs text-center">
+                                  Finalizado
+                                </span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -384,6 +471,9 @@ export default function Dashboard() {
                   </h3>
                   <p className="text-purple-600 text-sm">
                     Acompanhe todos os chamados do sistema
+                  </p>
+                  <p className="text-purple-500 text-xs mt-1">
+                    🔧 Administradores podem excluir apenas chamados em andamento
                   </p>
                 </div>
                 <div className="overflow-x-auto">
@@ -419,6 +509,9 @@ export default function Dashboard() {
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Criado em
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Ações
                         </th>
                       </tr>
                     </thead>
@@ -475,6 +568,20 @@ export default function Dashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {formatDate(chamado.criado_em)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {chamado.status === "em andamento" ? (
+                              <button
+                                onClick={() => handleExcluirChamado(chamado.id_chamado)}
+                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
+                              >
+                                Excluir
+                              </button>
+                            ) : (
+                              <span className="text-gray-400 text-xs">
+                                {chamado.status === "pendente" ? "Apenas em andamento" : "Não disponível"}
+                              </span>
+                            )}
                           </td>
                         </tr>
                       ))}

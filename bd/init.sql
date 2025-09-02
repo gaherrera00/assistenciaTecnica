@@ -34,7 +34,19 @@ CREATE TABLE patrimonios (
 
 -- Inserção de patrimônios de exemplo
 INSERT INTO patrimonios (tipo_item, sala, status, data_aquisicao, observacoes)
-VALUES ('Computador', 'Sala 101', 'em uso', '2023-05-10', 'Computador com SSD');
+VALUES ('Computador', '1A-01', 'disponível', '2023-05-10', 'Computador com SSD');
+INSERT INTO patrimonios (tipo_item, sala, status, data_aquisicao, observacoes)
+VALUES ('Computador', '1A-02', 'disponível', '2023-05-10', 'Computador com HD');
+INSERT INTO patrimonios (tipo_item, sala, status, data_aquisicao, observacoes)
+VALUES ('Computador', '1B-01', 'disponível', '2023-05-10', 'Computador com SSD');
+INSERT INTO patrimonios (tipo_item, sala, status, data_aquisicao, observacoes)
+VALUES ('Computador', '1B-02', 'disponível', '2023-05-10', 'Computador com HD');
+INSERT INTO patrimonios (tipo_item, sala, status, data_aquisicao, observacoes)
+VALUES ('Computador', '2A-01', 'disponível', '2023-05-10', 'Computador com SSD');
+INSERT INTO patrimonios (tipo_item, sala, status, data_aquisicao, observacoes)
+VALUES ('Projetor', '1A-01', 'disponível', '2023-05-10', 'Projetor HD');
+INSERT INTO patrimonios (tipo_item, sala, status, data_aquisicao, observacoes)
+VALUES ('Impressora', '1A-01', 'disponível', '2023-05-10', 'Impressora Laser');
 
 -- Criação da tabela `pool`
 CREATE TABLE pool (

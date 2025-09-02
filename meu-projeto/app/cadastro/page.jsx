@@ -114,6 +114,7 @@ export default function Cadastro() {
           <label htmlFor="ra" className="sr-only">
             RA
           </label>
+          
           <input
             type="text"
             id="ra"

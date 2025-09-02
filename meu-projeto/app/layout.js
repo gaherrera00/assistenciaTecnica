@@ -15,7 +15,6 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Zelus",
-  description: "Feito por Gustavo 00",
 };
 
 export default function RootLayout({ children }) {

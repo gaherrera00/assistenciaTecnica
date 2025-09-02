@@ -1,7 +1,7 @@
-import { read, compare } from '../config/database.js';
-import { criarCadastro } from '../models/auth.js';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config/jwt.js';
+import { read, compare } from "../config/database.js";
+import { criarCadastro } from "../models/auth.js";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config/jwt.js";
 
 const cadastro = async (req, res) => {
   const { nome, email, ra, senha, funcao } = req.body;
@@ -82,38 +82,42 @@ const cadastro = async (req, res) => {
   const cadastroId = await criarCadastro(cadastroData);         
   res.status(201).json({ mensagem: 'Cadastro realizado com sucesso.', cadastroId });
   } catch (err) {
-    console.error('Erro ao cadastrar usuario: ', err);
-    res.status(500).json({ mensagem: 'Erro ao cadastrar usuario.' });
+    console.error("Erro ao cadastrar usuario: ", err);
+    res.status(500).json({ mensagem: "Erro ao cadastrar usuario." });
   }
-}
+};
 
 const loginController = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
     // Verificar se o usuário existe no banco de dados
-    const usuario = await read('usuarios', `email = '${email}'`);
+    const usuario = await read("usuarios", `email = '${email}'`);
 
     if (!usuario) {
-      return res.status(404).json({ mensagem: 'Usuário não encontrado' });
+      return res.status(404).json({ mensagem: "Usuário não encontrado" });
     }
 
     // Verificar se a senha está correta (comparar a senha enviada com o hash armazenado)
     const senhaCorreta = await compare(senha, usuario.senha);
 
     if (!senhaCorreta) {
-      return res.status(401).json({ mensagem: 'Senha ou email incorreto' });
+      return res.status(401).json({ mensagem: "Senha ou email incorreto" });
     }
 
     // Gerar o token JWT
-    const token = jwt.sign({ 
-      id: usuario.id_usuario, 
-      email: usuario.email,
-      funcao: usuario.funcao,
-      ra: usuario.ra
-    }, JWT_SECRET, {
-      expiresIn: '1h',
-    });
+    const token = jwt.sign(
+      {
+        id: usuario.id_usuario,
+        email: usuario.email,
+        funcao: usuario.funcao,
+        ra: usuario.ra,
+      },
+      JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     // Retornar dados do usuário (sem a senha) e o token
     const userData = {
@@ -122,13 +126,17 @@ const loginController = async (req, res) => {
       email: usuario.email,
       ra: usuario.ra,
       funcao: usuario.funcao,
-      status: usuario.status
+      status: usuario.status,
     };
 
-    res.json({ mensagem: 'Login realizado com sucesso', token, user: userData});
+    res.json({
+      mensagem: "Login realizado com sucesso",
+      token,
+      user: userData,
+    });
   } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    res.status(500).json({ mensagem: 'Erro ao fazer login' });
+    console.error("Erro ao fazer login:", error);
+    res.status(500).json({ mensagem: "Erro ao fazer login" });
   }
 };
 
