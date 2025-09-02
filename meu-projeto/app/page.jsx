@@ -105,15 +105,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* MARCAS */}
-      <section className="bg-gradient-to-r from-[#084438] to-green-700 py-12 text-secondary">
-        <div className="flex items-center justify-center gap-6">
-          <span className="font-bold text-white">ESPECIALIZADA</span>
-          <img src="logodell.png" alt="DELL" className="w-25" />
-          <span className="font-bold text-white">ESPECIALIZADA</span>
-        </div>
-      </section>
-
       {/* DEPOIMENTOS */}
       <section className="bg-secondary py-16">
         <div className="container mx-auto px-4 max-w-5xl text-center">
