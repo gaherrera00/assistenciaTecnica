@@ -51,7 +51,9 @@ const criarChamadoController = async (req, res) => {
         }
 
         if (ra) {
-            if (typeof ra !== "string" || !/^\d{8}$/.test(ra)) {
+            ra = ra.toString().padStart(8, "0");
+
+            if (!/^\d{8}$/.test(ra)) {
                 return res.status(400).json({ mensagem: "RA deve conter exatamente 8 números." });
             }
 
@@ -65,7 +67,7 @@ const criarChamadoController = async (req, res) => {
                 return res.status(400).json({ mensagem: "Somente alunos possuem RA." });
             }
         }
-
+        
         if (!turma || typeof turma !== "string" || turma.trim().length < 2) {
             return res.status(400).json({ mensagem: "Turma é obrigatória e deve ter ao menos 2 caracteres." });
         }

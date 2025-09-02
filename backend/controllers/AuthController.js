@@ -28,7 +28,7 @@ const cadastro = async (req, res) => {
   // Validação do RA
   let raFinal = null;
 
-  if (funcao === 'aluno') {
+  if (funcao === 'aluno' || funcao === 'tecnico' || funcao === 'adm') {
     if (!ra) {
       return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
     }
@@ -47,29 +47,16 @@ const cadastro = async (req, res) => {
 
     raFinal = ra; // mantém o RA como string com zeros à esquerda
   }
+  
+// Validação da senha
+if (!senha || senha.length < 6 || senha.length > 8) {
+  return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
+}
 
-  // Técnico e Adm → RA fica NULL
-  if (funcao === 'tecnico' || funcao === 'adm') {
-    if (ra) {
-      return res.status(400).json({ mensagem: 'Técnico ou Administrador não pode possuir um RA.' });
-    }
-    raFinal = null;
-  }
-  // Validação da senha
-  if (senha.length < 6 || senha.length > 8) {
-    return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
-  }
-
-  let temNumero = false;
-  for (let i = 0; i < senha.length; i++) {
-    if (!isNaN(senha[i]) && senha[i] !== ' ') {
-      temNumero = true;
-      break;
-    }
-  }
-  if (!temNumero) {
-    return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
-  }
+// Verifica se contém pelo menos um número
+if (!/\d/.test(senha)) {
+  return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
+}
 
   const cadastroData = {
     nome: nome,
