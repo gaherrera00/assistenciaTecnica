@@ -27,7 +27,7 @@ export default function ChamadosUser() {
     historico: "",
   });
 
-  const FileChange = (e) => {
+  const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     const urls = files.map((file) => URL.createObjectURL(file));
     setPreviews(urls);
@@ -70,16 +70,22 @@ export default function ChamadosUser() {
     try {
       // Combina os dados do usuário com os dados do chamado
       const chamadoCompleto = {
-        ...userData,
-        ...chamadoData,
-        status: "pendente",
-        dataCriacao: new Date().toISOString(),
+        nome: userData.nome,
+        ra: parseInt(userData.ra), // Converte para número
+        turma: userData.turma,
+        sala: userData.sala,
+        id_patrimonio: parseInt(chamadoData.idMaquina) || 1, // Converte para número e usa nome correto, padrão 1
+        sintoma: chamadoData.sintoma,
+        detalhes: chamadoData.detalhes,
+        inicio: chamadoData.inicio || new Date().toISOString(),
+        frequencia: chamadoData.frequencia,
+        historico: chamadoData.historico,
       };
 
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chamado`,
+        `http://localhost:3001/chamado`,
         {
           method: "POST",
           headers: {
@@ -108,10 +114,12 @@ export default function ChamadosUser() {
           setPreviews([]);
         }, 2000);
       } else {
+        console.error("Erro do servidor:", data);
         setError(data.mensagem || "Erro ao enviar chamado");
       }
     } catch (err) {
-      setError("Erro de conexão. Tente novamente.");
+      console.error("Erro de conexão:", err);
+      setError("Erro de conexão. Verifique se o servidor está rodando e tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -273,11 +281,11 @@ export default function ChamadosUser() {
                 Início / Há quanto tempo
               </label>
               <input
-                type="text"
+                type="date"
                 id="inicio"
                 value={chamadoData.inicio}
                 onChange={handleChamadoChange}
-                placeholder="Ex.: Começou ontem, há 2 dias, após atualização"
+                placeholder="Ex.: 11/08/2025"
                 className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
               />
 
