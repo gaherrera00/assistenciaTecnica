@@ -311,6 +311,13 @@ export default function ChamadosUser() {
               >
                 {loading ? "Enviando..." : "Enviar Chamado"}
               </button>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="mt-2 p-3 bg-gray-500 text-white border-none rounded-lg text-base cursor-pointer hover:bg-gray-700 transition-colors w-full"
+              >
+                Voltar
+              </button>
             </form>
           )}
         </div>
