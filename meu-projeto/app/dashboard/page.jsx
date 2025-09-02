@@ -46,9 +46,11 @@ export default function Dashboard() {
   const handleAceitarChamado = async (chamadoId) => {
     // Verificar se o técnico já tem um chamado atribuído
     if (user?.funcao === "tecnico" || user?.funcao === "técnico") {
-      const chamadoAtual = chamados.find(c => c.status === "em andamento");
+      const chamadoAtual = chamados.find((c) => c.status === "em andamento");
       if (chamadoAtual && chamadoAtual.id_chamado !== chamadoId) {
-        alert("Você já tem um chamado em andamento. Finalize o chamado atual antes de aceitar outro.");
+        alert(
+          "Você já tem um chamado em andamento. Finalize o chamado atual antes de aceitar outro."
+        );
         return;
       }
     }
@@ -71,22 +73,26 @@ export default function Dashboard() {
   };
 
   const handleExcluirChamado = async (chamadoId) => {
-    if (!confirm("Tem certeza que deseja excluir este chamado? Esta ação não pode ser desfeita.")) {
+    if (
+      !confirm(
+        "Tem certeza que deseja excluir este chamado? Esta ação não pode ser desfeita."
+      )
+    ) {
       return;
     }
 
     try {
       setLoading(true);
       await chamadoAPI.deletar(chamadoId);
-      
+
       // Recarregar os chamados para mostrar a atualização
       await fetchChamados();
-      
+
       alert("Chamado excluído com sucesso!");
     } catch (err) {
       console.error("Erro detalhado:", err);
       let errorMessage = "Erro ao excluir chamado";
-      
+
       if (err.message.includes("403")) {
         errorMessage = "Você não tem permissão para excluir chamados";
       } else if (err.message.includes("404")) {
@@ -100,7 +106,7 @@ export default function Dashboard() {
         router.push("/login");
         return;
       }
-      
+
       setError(errorMessage);
       alert(errorMessage);
     } finally {
@@ -112,10 +118,10 @@ export default function Dashboard() {
     try {
       setLoading(true);
       await chamadoAPI.atualizar(chamadoId, { status: novoStatus });
-      
+
       // Recarregar os chamados para mostrar a atualização
       await fetchChamados();
-      
+
       alert(`Status alterado para "${novoStatus}" com sucesso!`);
     } catch (err) {
       setError("Erro ao alterar status: " + err.message);
@@ -413,6 +419,14 @@ export default function Dashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             <div className="flex flex-col gap-1">
+                              {/* Botão Apontamentos sempre visível */}
+                              <button
+                                onClick={() => router.push("/apontamentos")}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
+                              >
+                                Apontamentos
+                              </button>
+
                               {chamado.status === "pendente" && (
                                 <button
                                   onClick={() =>
@@ -427,7 +441,10 @@ export default function Dashboard() {
                                 <>
                                   <button
                                     onClick={() =>
-                                      handleAlterarStatus(chamado.id_chamado, "pendente")
+                                      handleAlterarStatus(
+                                        chamado.id_chamado,
+                                        "pendente"
+                                      )
                                     }
                                     className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
                                   >
@@ -435,7 +452,10 @@ export default function Dashboard() {
                                   </button>
                                   <button
                                     onClick={() =>
-                                      handleAlterarStatus(chamado.id_chamado, "concluído")
+                                      handleAlterarStatus(
+                                        chamado.id_chamado,
+                                        "concluído"
+                                      )
                                     }
                                     className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
                                   >
@@ -473,7 +493,8 @@ export default function Dashboard() {
                     Acompanhe todos os chamados do sistema
                   </p>
                   <p className="text-purple-500 text-xs mt-1">
-                    🔧 Administradores podem excluir apenas chamados em andamento
+                    🔧 Administradores podem excluir apenas chamados em
+                    andamento
                   </p>
                 </div>
                 <div className="overflow-x-auto">
@@ -572,14 +593,18 @@ export default function Dashboard() {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {chamado.status === "em andamento" ? (
                               <button
-                                onClick={() => handleExcluirChamado(chamado.id_chamado)}
+                                onClick={() =>
+                                  handleExcluirChamado(chamado.id_chamado)
+                                }
                                 className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
                               >
                                 Excluir
                               </button>
                             ) : (
                               <span className="text-gray-400 text-xs">
-                                {chamado.status === "pendente" ? "Apenas em andamento" : "Não disponível"}
+                                {chamado.status === "pendente"
+                                  ? "Apenas em andamento"
+                                  : "Não disponível"}
                               </span>
                             )}
                           </td>
