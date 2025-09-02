@@ -49,8 +49,20 @@ const criarChamadoController = async (req, res) => {
             return res.status(400).json({ mensagem: "Nome é obrigatório e deve ter ao menos 3 caracteres." });
         }
 
-        if (!ra || typeof ra !== "number" || ra.toString().length < 1) {
-            return res.status(400).json({ mensagem: "RA é obrigatório e deve ser um número válido." });
+        if (ra) {
+            if (typeof ra !== "string" || !/^\d{8}$/.test(ra)) {
+                return res.status(400).json({ mensagem: "RA deve conter exatamente 8 números." });
+            }
+
+            // busca usuário com esse RA
+            const usuario = await read("usuarios", `ra = '${ra}'`);
+            if (!usuario || usuario.length === 0) {
+                return res.status(400).json({ mensagem: "Nenhum usuário encontrado com este RA." });
+            }
+
+            if (usuario[0].funcao !== "aluno") {
+                return res.status(400).json({ mensagem: "Somente alunos possuem RA." });
+            }
         }
 
         if (!turma || typeof turma !== "string" || turma.trim().length < 2) {
