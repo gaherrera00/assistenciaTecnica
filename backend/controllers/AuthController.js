@@ -6,12 +6,26 @@ import { JWT_SECRET } from '../config/jwt.js';
 const cadastro = async (req, res) => {
   const { nome, email, ra, senha, funcao } = req.body;
   try {
+    //Validação do email
+    const emailRegex = /^[\w.-]+@(gmail|hotmail|outlook|exemplo)\.com$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ mensagem: "O email é inválido. Por favor, use @gmail, @hotmail, @outlook ou @exemplo." });
+    }
+
     const usuario = await read('usuarios', `email = '${email}'`);
 
     if (usuario) {
       return res.status(400).json({ mensagem: 'Email já cadastrado!' })
     }
 
+    //Validação da função
+    const verificarFuncao = ['aluno', 'tecnico', 'adm'];
+
+    if (!verificarFuncao.includes(funcao)) {
+      return res.status(400).json({ mensagem: 'Esta função não existe.' })
+    }
+
+    // Validação do RA
     let raFinal = null;
 
     if (funcao === 'aluno') {
@@ -19,21 +33,21 @@ const cadastro = async (req, res) => {
         return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
       }
 
-      // Normaliza RA → garante 8 dígitos preenchendo com zeros à esquerda
-      const raNormalizado = ra.toString().padStart(8, '0');
-
       // Verifica se RA já existe
-      const usuarioComRa = await read('usuarios', `ra = '${raNormalizado}'`);
+      const usuarioComRa = await read('usuarios', `ra = '${ra}'`);
       if (usuarioComRa && usuarioComRa.length > 0) {
         return res.status(400).json({ mensagem: 'RA já cadastrado!' });
       }
 
-      raFinal = raNormalizado;
+      raFinal = ra;
     }
 
-    // Técnico e Adm → RA fica NULL
+    // Técnico e Gerente → RA fica NULL
     if (funcao === 'tecnico' || funcao === 'adm') {
-      raFinal = null;
+      if (ra) { // Se a variável 'ra' tiver algum valor...
+        return res.status(400).json({ mensagem: 'Técnico ou Administrador não pode possuir um RA.' });
+      }
+      raFinal = null; // ...caso contrário, mantém o RA como null, como você queria.
     }
 
     // Validação da senha
@@ -52,16 +66,10 @@ const cadastro = async (req, res) => {
       return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
     }
 
-    const verificarFuncao = ['aluno', 'tecnico', 'adm'];
-
-    if (!verificarFuncao.includes(funcao)) {
-      return res.status(400).json({ mensagem: 'Esta função não existe.' })
-    }
-
     const cadastroData = {
       nome: nome,
       email: email, 
-      ra: raFinal, // usa o RA já validado e formatado
+      ra: ra,
       senha: senha,
       funcao: funcao
     };
@@ -72,24 +80,27 @@ const cadastro = async (req, res) => {
     console.error('Erro ao cadastrar usuario: ', err);
     res.status(500).json({ mensagem: 'Erro ao cadastrar usuario.' });
   }
-};
+}
 
 const loginController = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
+    // Verificar se o usuário existe no banco de dados
     const usuario = await read('usuarios', `email = '${email}'`);
 
     if (!usuario) {
       return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     }
 
+    // Verificar se a senha está correta (comparar a senha enviada com o hash armazenado)
     const senhaCorreta = await compare(senha, usuario.senha);
 
     if (!senhaCorreta) {
       return res.status(401).json({ mensagem: 'Senha ou email incorreto' });
     }
 
+    // Gerar o token JWT
     const token = jwt.sign({ 
       id: usuario.id_usuario, 
       email: usuario.email,
@@ -99,6 +110,7 @@ const loginController = async (req, res) => {
       expiresIn: '1h',
     });
 
+    // Retornar dados do usuário (sem a senha) e o token
     const userData = {
       id: usuario.id_usuario,
       nome: usuario.nome,
