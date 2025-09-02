@@ -84,17 +84,14 @@ export default function ChamadosUser() {
 
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `http://localhost:3001/chamado`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-          body: JSON.stringify(chamadoCompleto),
-        }
-      );
+      const response = await fetch(`http://localhost:3001/chamado`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify(chamadoCompleto),
+      });
 
       const data = await response.json();
 
@@ -119,7 +116,9 @@ export default function ChamadosUser() {
       }
     } catch (err) {
       console.error("Erro de conexão:", err);
-      setError("Erro de conexão. Verifique se o servidor está rodando e tente novamente.");
+      setError(
+        "Erro de conexão. Verifique se o servidor está rodando e tente novamente."
+      );
     } finally {
       setLoading(false);
     }
