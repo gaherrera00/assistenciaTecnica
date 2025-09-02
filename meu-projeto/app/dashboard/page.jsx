@@ -436,7 +436,7 @@ export default function Dashboard() {
                                   <button
                                     onClick={() =>
                                       router.push(
-                                        `/apontamentos/${chamado.id_chamado}`
+                                        `/apontamentos`
                                       )
                                     }
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
