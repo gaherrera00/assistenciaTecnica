@@ -7,7 +7,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 export default function Apontamentos() {
   const [formData, setFormData] = useState({
     idChamado: "",
-    idTecnico: "",
+    ra: "",
     comeco: "",
     fim: "",
     descricao: "",
@@ -34,8 +34,8 @@ export default function Apontamentos() {
 
     try {
       const token = localStorage.getItem("token");
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/apontamento`, {
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/apontamentos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export default function Apontamentos() {
         setSuccess("Apontamento criado com sucesso!");
         setFormData({
           idChamado: "",
-          idTecnico: "",
+          ra: "",
           comeco: "",
           fim: "",
           descricao: "",
@@ -60,6 +60,7 @@ export default function Apontamentos() {
         setError(data.mensagem || "Erro ao criar apontamento");
       }
     } catch (err) {
+      console.error("Erro de conexão:", err); // 👈 vai mostrar no console o erro real
       setError("Erro de conexão. Tente novamente.");
     } finally {
       setLoading(false);
@@ -94,7 +95,7 @@ export default function Apontamentos() {
             </div>
           )}
 
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-4 text-black" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="idChamado" className="block text-sm font-medium text-gray-700 mb-1">
                 ID do Chamado
@@ -111,14 +112,14 @@ export default function Apontamentos() {
             </div>
 
             <div>
-              <label htmlFor="idTecnico" className="block text-sm font-medium text-gray-700 mb-1">
-                ID do Técnico
+              <label htmlFor="ra" className="block text-sm font-medium text-gray-700 mb-1">
+                RA do Técnico
               </label>
               <input
-                type="number"
-                id="idTecnico"
-                name="idTecnico"
-                value={formData.idTecnico}
+                type="text"
+                id="ra"
+                name="ra"
+                value={formData.ra}
                 onChange={handleChange}
                 required
                 className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent"
