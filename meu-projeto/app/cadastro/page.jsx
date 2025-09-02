@@ -19,9 +19,9 @@ export default function Cadastro() {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [id]: value
+      [id]: value,
     }));
   };
 
@@ -30,7 +30,8 @@ export default function Cadastro() {
     setError("");
     setSuccess("");
 
-    if (!/^\d{8}$/.test(formData.ra)) {
+    // Só valida RA se for aluno
+    if (formData.funcao === "aluno" && !/^\d{8}$/.test(formData.ra)) {
       setError("O RA deve conter exatamente 8 números.");
       return;
     }
@@ -40,7 +41,7 @@ export default function Cadastro() {
     try {
       const cadastroData = {
         ...formData,
-        ra: parseInt(formData.ra),
+        ra: formData.funcao === "aluno" ? parseInt(formData.ra) : null, // se não for aluno, não envia RA
       };
 
       await authAPI.cadastro(cadastroData);
@@ -83,9 +84,6 @@ export default function Cadastro() {
 
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           {/* Nome completo */}
-          <label htmlFor="nome" className="sr-only">
-            Nome Completo
-          </label>
           <input
             type="text"
             id="nome"
@@ -93,13 +91,10 @@ export default function Cadastro() {
             value={formData.nome}
             onChange={handleChange}
             required
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
+            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 text-black"
           />
 
           {/* E-mail */}
-          <label htmlFor="email" className="sr-only">
-            E-mail
-          </label>
           <input
             type="email"
             id="email"
@@ -107,32 +102,29 @@ export default function Cadastro() {
             value={formData.email}
             onChange={handleChange}
             required
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
+            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 text-black"
           />
 
-          {/* RA */}
-          <label htmlFor="ra" className="sr-only">
-            RA
-          </label>
-          <input
-            type="text"
-            id="ra"
-            placeholder="Seu RA (8 dígitos)"
-            value={formData.ra}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, "");
-              if (value.length <= 8) {
-                setFormData({ ...formData, ra: value });
-              }
-            }}
-            
-            maxLength={8}
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
-          />
+          {/* RA (apenas se for aluno) */}
+          {formData.funcao === "aluno" && (
+            <input
+              type="text"
+              id="ra"
+              placeholder="Seu RA (8 dígitos)"
+              value={formData.ra}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, "");
+                if (value.length <= 8) {
+                  setFormData({ ...formData, ra: value });
+                }
+              }}
+              required
+              maxLength={8}
+              className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 text-black"
+            />
+          )}
+
           {/* Senha */}
-          <label htmlFor="senha" className="sr-only">
-            Senha
-          </label>
           <input
             type="password"
             id="senha"
@@ -142,19 +134,16 @@ export default function Cadastro() {
             required
             minLength={6}
             maxLength={8}
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
+            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 text-black"
           />
 
           {/* Função */}
-          <label htmlFor="funcao" className="sr-only">
-            Função
-          </label>
           <select
             id="funcao"
             value={formData.funcao}
             onChange={handleChange}
             required
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
+            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 text-black"
           >
             <option value="">Selecione sua função</option>
             <option value="aluno">Aluno</option>
