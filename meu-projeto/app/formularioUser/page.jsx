@@ -45,9 +45,9 @@ export default function ChamadosUser() {
     e.preventDefault();
 
     // Validação da sala
-    const salaRegex = /^[0-2][A-D]-(?:[1-9]|1\d|20)$/;
+    const salaRegex = /^[0-2][A-D]-(?:[1-9])$/;
     if (!salaRegex.test(userData.sala)) {
-      setError("A sala deve estar no formato correto (ex: 1B-12).");
+      setError("A sala deve estar no formato correto (ex: 1B-9).");
       return;
     }
 
@@ -304,38 +304,6 @@ export default function ChamadosUser() {
                 rows={3}
                 className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black resize-none"
               />
-
-              {/* Upload múltiplo */}
-              <input
-                type="file"
-                id="fotos"
-                name="fotos"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <label
-                htmlFor="fotos"
-                className="p-3 bg-[#084438] text-white border-none rounded-lg text-base cursor-pointer hover:bg-green-800 transition-colors text-center"
-              >
-                Anexar imagens
-              </label>
-
-              {/* Miniaturas */}
-              {previews.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2 justify-center">
-                  {previews.map((src, index) => (
-                    <img
-                      key={index}
-                      src={src}
-                      alt={`Pré-visualização ${index + 1}`}
-                      className="w-20 h-20 object-cover rounded-lg border"
-                    />
-                  ))}
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={loading}
