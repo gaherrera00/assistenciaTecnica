@@ -419,14 +419,6 @@ export default function Dashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             <div className="flex flex-col gap-1">
-                              {/* Botão Apontamentos sempre visível */}
-                              <button
-                                onClick={() => router.push("/apontamentos")}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
-                              >
-                                Apontamentos
-                              </button>
-
                               {chamado.status === "pendente" && (
                                 <button
                                   onClick={() =>
@@ -437,18 +429,19 @@ export default function Dashboard() {
                                   Aceitar
                                 </button>
                               )}
+
                               {chamado.status === "em andamento" && (
                                 <>
+                                  {/* Apontamentos só aparece depois de aceitar */}
                                   <button
                                     onClick={() =>
-                                      handleAlterarStatus(
-                                        chamado.id_chamado,
-                                        "pendente"
+                                      router.push(
+                                        `/apontamentos/${chamado.id_chamado}`
                                       )
                                     }
-                                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
                                   >
-                                    Voltar para Pendente
+                                    Apontamentos
                                   </button>
                                   <button
                                     onClick={() =>
@@ -461,11 +454,20 @@ export default function Dashboard() {
                                   >
                                     Finalizar
                                   </button>
-                                  <span className="text-blue-600 text-xs text-center">
-                                    Em atendimento
-                                  </span>
+                                  <button
+                                    onClick={() =>
+                                      handleAlterarStatus(
+                                        chamado.id_chamado,
+                                        "pendente"
+                                      )
+                                    }
+                                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
+                                  >
+                                    Voltar para Pendente
+                                  </button>
                                 </>
                               )}
+
                               {chamado.status === "concluído" && (
                                 <span className="text-green-600 text-xs text-center">
                                   Finalizado
