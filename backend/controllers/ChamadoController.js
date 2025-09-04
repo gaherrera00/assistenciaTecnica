@@ -46,61 +46,14 @@ const criarChamadoController = async (req, res) => {
     try {
         const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
-        if (!nome || typeof nome !== "string" || nome.trim().length < 3) {
-            return res.status(400).json({ mensagem: "Nome é obrigatório e deve ter ao menos 3 caracteres." });
-        }
-
-        if (ra) {
-            ra = ra.toString().padStart(8, "0");
-
-            if (!/^\d{8}$/.test(ra)) {
-                return res.status(400).json({ mensagem: "RA deve conter exatamente 8 números." });
-            }
-
-            // busca usuário com esse RA
-            const usuario = await read("usuarios", `ra = '${ra}'`);
-            if (!usuario || usuario.length === 0) {
-                return res.status(400).json({ mensagem: "Nenhum usuário encontrado com este RA." });
-            }
-
-            if (usuario[0].funcao !== "aluno") {
-                return res.status(400).json({ mensagem: "Somente alunos possuem RA." });
-            }
-        }
-        
-        if (!turma || typeof turma !== "string" || turma.trim().length < 2) {
-            return res.status(400).json({ mensagem: "Turma é obrigatória e deve ter ao menos 2 caracteres." });
-        }
-
         const validarPatrimonio = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
         if (!validarPatrimonio || validarPatrimonio.length === 0) {
             return res.status(400).json({ mensagem: "Patrimônio não encontrado." });
         }
 
-        if (!sintoma || typeof sintoma !== "string" || sintoma.trim().length < 5) {
-            return res.status(400).json({ mensagem: "Sintoma é obrigatório e deve ter ao menos 5 caracteres." });
-        }
-
-        if (detalhes && typeof detalhes !== "string") {
-            return res.status(400).json({ mensagem: "Detalhes devem ser texto." });
-        }
-
-        if (inicio && isNaN(Date.parse(inicio))) {
-            return res.status(400).json({ mensagem: "Data de início inválida." });
-        }
-
-        if (frequencia && typeof frequencia !== "string") {
-            return res.status(400).json({ mensagem: "Frequência deve ser texto." });
-        }
-
-        if (historico && typeof historico !== "string") {
-            return res.status(400).json({ mensagem: "Histórico deve ser texto." });
-        }
-
         // monta o objeto com os dados
         const chamadoData = {
             nome: nome ?? null,
-            ra: ra ?? null,
             turma: turma ?? null,
             id_patrimonio: id_patrimonio,
             sintoma: sintoma ?? null,
@@ -108,7 +61,8 @@ const criarChamadoController = async (req, res) => {
             inicio: inicio ?? null,
             frequencia: frequencia ?? null,
             historico: historico ?? null
-        };
+          };
+          console.log(chamadoData)
 
         // Verificar se o RA existe na tabela de usuários
         const usuarioExiste = await read('usuarios', `ra = '${ra}'`);
