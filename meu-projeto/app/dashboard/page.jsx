@@ -148,6 +148,9 @@ export default function Dashboard() {
     }
   };
 
+  console.log(chamados);
+  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-r from-[#084438] to-green-700 flex items-center justify-center">
