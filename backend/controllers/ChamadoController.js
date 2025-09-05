@@ -122,4 +122,4 @@ const excluirChamadoController = async (req, res) => {
     }
 };
 
-export { listarChamadosController, obterChamadoPorIdController, criarChamadoController, atualizarChamadoController, excluirChamadoController };
+export { listarChamadosController, obterChamadoPorIdController, criarChamadoController, excluirChamadoController };

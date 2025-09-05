@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarChamadosController, obterChamadoPorIdController, criarChamadoController, atualizarChamadoController, excluirChamadoController } from '../controllers/ChamadoController.js';
+import { listarChamadosController, obterChamadoPorIdController, criarChamadoController, excluirChamadoController } from '../controllers/ChamadoController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -12,8 +12,6 @@ router.get('/:id', obterChamadoPorIdController);
 
 router.post('/', criarChamadoController);
 
-router.put('/:id', atualizarChamadoController);
-
 router.delete('/:id', excluirChamadoController);
 
 router.options('/', (req, res) => {
@@ -22,7 +20,7 @@ router.options('/', (req, res) => {
 });
 
 router.options('/:id', (req, res) => {
-    res.setHeader('Allow', 'GET, PUT, DELETE, OPTIONS');
+    res.setHeader('Allow', 'GET, DELETE, OPTIONS');
     res.status(204).send();
 });
 
