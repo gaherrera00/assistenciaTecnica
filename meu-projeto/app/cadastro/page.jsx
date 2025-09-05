@@ -9,7 +9,6 @@ export default function Cadastro() {
     nome: "",
     email: "",
     senha: "",
-    ra: "",
     funcao: "",
   });
   const [loading, setLoading] = useState(false);
@@ -19,9 +18,9 @@ export default function Cadastro() {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [id]: value
+      [id]: value,
     }));
   };
 
@@ -30,20 +29,10 @@ export default function Cadastro() {
     setError("");
     setSuccess("");
 
-    if (!/^\d{8}$/.test(formData.ra)) {
-      setError("O RA deve conter exatamente 8 números.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const cadastroData = {
-        ...formData,
-        ra: parseInt(formData.ra),
-      };
-
-      await authAPI.cadastro(cadastroData);
+      await authAPI.cadastro(formData);
       setSuccess("Cadastro realizado com sucesso! Redirecionando...");
 
       setTimeout(() => {
@@ -114,7 +103,7 @@ export default function Cadastro() {
           <label htmlFor="ra" className="sr-only">
             RA
           </label>
-          
+
           <input
             type="text"
             id="ra"
@@ -160,7 +149,7 @@ export default function Cadastro() {
             <option value="">Selecione sua função</option>
             <option value="aluno">Aluno</option>
             <option value="tecnico">Técnico</option>
-            <option value="gerente">Gerente</option>
+            <option value="administrador">Administrador</option>
           </select>
 
           {/* Botão de cadastro */}

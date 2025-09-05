@@ -45,7 +45,7 @@ export default function Dashboard() {
 
   const handleAceitarChamado = async (chamadoId) => {
     // Verificar se o técnico já tem um chamado atribuído
-    if (user?.funcao === "tecnico" || user?.funcao === "técnico") {
+    if (user?.funcao === "tecnico") {
       const chamadoAtual = chamados.find((c) => c.status === "em andamento");
       if (chamadoAtual && chamadoAtual.id_chamado !== chamadoId) {
         alert(
@@ -195,7 +195,6 @@ export default function Dashboard() {
               </p>
             )}
             {(user?.funcao === "tecnico" ||
-              user?.funcao === "gerente" ||
               user?.funcao === "administrador") && (
               <p className="text-green-200 text-sm mt-1">
                 Visualizando todos os chamados do sistema
@@ -294,7 +293,7 @@ export default function Dashboard() {
             )}
 
             {/* Tabela para TÉCNICOS - Foco técnico com botão de aceitar */}
-            {(user?.funcao === "tecnico" || user?.funcao === "técnico") && (
+            {(user?.funcao === "tecnico") && (
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="p-4 bg-green-50 border-b">
                   <h3 className="text-lg font-semibold text-green-800">
@@ -437,11 +436,7 @@ export default function Dashboard() {
                                 <>
                                   {/* Apontamentos só aparece depois de aceitar */}
                                   <button
-                                    onClick={() =>
-                                      router.push(
-                                        `/apontamentos`
-                                      )
-                                    }
+                                    onClick={() => router.push(`/apontamentos`)}
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-colors"
                                   >
                                     Apontamentos
@@ -487,8 +482,7 @@ export default function Dashboard() {
             )}
 
             {/* Tabela para ADMINISTRADORES - Visão completa sem botão de aceitar */}
-            {(user?.funcao === "administrador" ||
-              user?.funcao === "gerente") && (
+            {user?.funcao === "administrador" && (
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="p-4 bg-purple-50 border-b">
                   <h3 className="text-lg font-semibold text-purple-800">

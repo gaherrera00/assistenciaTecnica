@@ -19,7 +19,7 @@ const cadastro = async (req, res) => {
   }
 
   //Validação da função
-  const verificarFuncao = ['aluno', 'tecnico', 'adm'];
+  const verificarFuncao = ['aluno', 'tecnico', 'administrador'];
 
   if (!verificarFuncao.includes(funcao)) {
     return res.status(400).json({ mensagem: 'Esta função não existe.' })
@@ -33,16 +33,18 @@ const cadastro = async (req, res) => {
       return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
     }
 
-    // RA deve conter exatamente 8 dígitos (incluindo zeros à esquerda)
-    const raRegex = /^\d{8}$/;
-    if (!raRegex.test(ra)) {
-      return res.status(400).json({ mensagem: 'O RA deve conter exatamente 8 números.' });
+    // Buscar usuário por email
+    const usuarioExistente = await read('usuarios', `email = '${email}'`);
+
+    if (usuarioExistente) {
+      return res.status(400).json({ mensagem: 'Email já cadastrado!' });
     }
 
-    // Verifica se RA já existe
-    const usuarioComRa = await read('usuarios', `ra = '${ra}'`);
-    if (usuarioComRa && usuarioComRa.length > 0) {
-      return res.status(400).json({ mensagem: 'RA já cadastrado!' });
+    // Validação da função
+    const verificarFuncao = ['aluno', 'tecnico', 'adm'];
+
+    if (!verificarFuncao.includes(funcao)) {
+      return res.status(400).json({ mensagem: 'Esta função não existe.' });
     }
 
     raFinal = ra; // mantém o RA como string com zeros à esquerda
@@ -66,8 +68,18 @@ if (!/\d/.test(senha)) {
     funcao: funcao
   };
     
-  const cadastroId = await criarCadastro(cadastroData);         
-  res.status(201).json({ mensagem: 'Cadastro realizado com sucesso.', cadastroId });
+    // Validação da senha
+    if (!senha || senha.length < 6 || senha.length > 8) {
+      return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
+    }
+
+    // Verifica se contém pelo menos um número
+    if (!/\d/.test(senha)) {
+      return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
+    }
+      
+    const cadastroId = await criarCadastro(cadastroData);         
+    res.status(201).json({ mensagem: 'Cadastro realizado com sucesso.', cadastroId });
   } catch (err) {
     console.error("Erro ao cadastrar usuario: ", err);
     res.status(500).json({ mensagem: "Erro ao cadastrar usuario." });
@@ -78,8 +90,17 @@ const loginController = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
+    // Validação básica dos campos
+    if (!email || !senha) {
+      return res.status(400).json({ mensagem: "Email e senha são obrigatórios" });
+    }
+
+    console.log("Tentativa de login para:", email);
+
     // Verificar se o usuário existe no banco de dados
     const usuario = await read("usuarios", `email = '${email}'`);
+    
+    console.log("Usuário encontrado:", usuario ? "Sim" : "Não");
 
     if (!usuario) {
       return res.status(404).json({ mensagem: "Usuário não encontrado" });
@@ -87,9 +108,16 @@ const loginController = async (req, res) => {
 
     // Verificar se a senha está correta (comparar a senha enviada com o hash armazenado)
     const senhaCorreta = await compare(senha, usuario.senha);
+    
+    console.log("Senha correta:", senhaCorreta);
 
     if (!senhaCorreta) {
       return res.status(401).json({ mensagem: "Senha ou email incorreto" });
+    }
+
+    // Verificar se o usuário está ativo
+    if (usuario.status === 'inativo') {
+      return res.status(403).json({ mensagem: "Usuário inativo. Entre em contato com o administrador." });
     }
 
     // Gerar o token JWT

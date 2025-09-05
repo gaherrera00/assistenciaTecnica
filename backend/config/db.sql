@@ -16,7 +16,7 @@ CREATE TABLE usuarios (
 );
 
 INSERT INTO usuarios (nome, senha, email, funcao)
-VALUES ('Seu Nome', 'sua_senha', 'seu.email@exemplo.com', 'admin');
+VALUES ('Seu Nome', 'sua_senha', 'seu.email@exemplo.com', 'administrador');
 
 -- Criação da tabela `pool`
 CREATE TABLE pool (

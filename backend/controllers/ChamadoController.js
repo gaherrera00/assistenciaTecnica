@@ -1,5 +1,4 @@
 import { listarChamados, obterChamadoPorId, criarChamado, atualizarChamado, excluirChamado } from "../models/chamado.js";
-import { excluirApontamento } from "../models/apontamentos.js";
 import { read, deleteRecord } from '../config/database.js';
 
 const listarChamadosController = async (req, res) => {
@@ -44,15 +43,30 @@ const obterChamadoPorIdController = async (req, res) => {
 
 const criarChamadoController = async (req, res) => {
     try {
-        const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        const { nome, ra, turma, id_patrimonio, sala, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
         const validarRa = await read('usuarios', `ra = ${ra}`);
-        if (!validarRa){
+        if (!validarRa) {
             return res.status(400).json({ mensagem: "RA não encontrado." });
         }
 
-        const validarPatrimonio = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
-        if (!validarPatrimonio || validarPatrimonio.length === 0) {
+        if (!id_patrimonio) {
+            return res.status(400).json({ mensagem: "ID do patrimônio é obrigatório." });
+        }
+
+        // Verificar se o RA existe na tabela de usuários
+        const usuarioResults = await read('usuarios', `ra = '${ra}'`);
+        const usuarioExiste = Array.isArray(usuarioResults) ? usuarioResults.length > 0 : usuarioResults !== null;
+        
+        if (!usuarioExiste) {
+            return res.status(400).json({ mensagem: "RA informado não pertence a nenhum usuário cadastrado." });
+        }
+
+        // Verificar se o patrimônio existe
+        const patrimonioResults = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
+        const validarPatrimonio = Array.isArray(patrimonioResults) ? patrimonioResults.length > 0 : patrimonioResults !== null;
+        
+        if (!validarPatrimonio) {
             return res.status(400).json({ mensagem: "Patrimônio não encontrado." });
         }
 
@@ -66,15 +80,8 @@ const criarChamadoController = async (req, res) => {
             inicio: inicio ?? null,
             frequencia: frequencia ?? null,
             historico: historico ?? null
-          };
-          console.log(chamadoData)
-
-        // Verificar se o RA existe na tabela de usuários
-        const usuarioExiste = await read('usuarios', `ra = '${ra}'`);
-        if (!usuarioExiste || usuarioExiste.length === 0) {
-            return res.status(400).json({ mensagem: "RA informado não pertence a nenhum usuário cadastrado." });
-        }
-
+        };
+        console.log(chamadoData)
 
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso.', chamadoId });
@@ -92,25 +99,27 @@ const excluirChamadoController = async (req, res) => {
         }
 
         // Verificar se o usuário é administrador
-        if (req.user.funcao !== 'administrador' && req.user.funcao !== 'gerente') {
+        if (req.user.funcao !== 'administrador') {
             return res.status(403).json({ mensagem: 'Apenas administradores podem excluir chamados' });
         }
 
         const chamadoId = req.params.id;
 
         // Verificar se o chamado existe
-        const chamado = await read('chamados', `id_chamado = ${chamadoId}`);
-        if (!chamado || chamado.length === 0) {
+        const chamadoResults = await read('chamados', `id_chamado = ${chamadoId}`);
+        const chamado = Array.isArray(chamadoResults) ? chamadoResults[0] : chamadoResults;
+        
+        if (!chamado) {
             return res.status(404).json({ mensagem: 'Chamado não encontrado' });
         }
 
         // Verificar se o chamado está em andamento
-        if (chamado[0].status !== 'em andamento') {
+        if (chamado.status !== 'em andamento') {
             return res.status(400).json({ mensagem: 'Apenas chamados em andamento podem ser excluídos' });
         }
 
         // Primeiro, excluir todos os apontamentos relacionados ao chamado
-        await deleteRecord('apontamentos', `id_chamado = ${chamadoId}`);
+        await deleteRecord('apontamentos', `chamado_id = ${chamadoId}`);
 
         // Depois, excluir o chamado
         await excluirChamado(chamadoId);
