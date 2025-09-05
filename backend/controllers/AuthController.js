@@ -6,12 +6,31 @@ import { JWT_SECRET } from "../config/jwt.js";
 const cadastro = async (req, res) => {
   const { nome, email, ra, senha, funcao } = req.body;
   try {
-    // Validação do email
-    const emailRegex = /^[\w.-]+@(gmail|hotmail|outlook|exemplo)\.com$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ 
-        mensagem: "O email é inválido. Por favor, use @gmail, @hotmail, @outlook ou @exemplo." 
-      });
+  //Validação do email
+  const emailRegex = /^[\w.-]+@(gmail|hotmail|outlook|exemplo)\.com$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ mensagem: "O email é inválido. Por favor, use @gmail, @hotmail, @outlook ou @exemplo." });
+  }
+
+  const usuario = await read('usuarios', `email = '${email}'`);
+
+  if (usuario) {
+    return res.status(400).json({ mensagem: 'Email já cadastrado!' })
+  }
+
+  //Validação da função
+  const verificarFuncao = ['aluno', 'tecnico', 'administrador'];
+
+  if (!verificarFuncao.includes(funcao)) {
+    return res.status(400).json({ mensagem: 'Esta função não existe.' })
+  }
+
+  // Validação do RA
+  let raFinal = null;
+
+  if (funcao === 'aluno' || funcao === 'tecnico' || funcao === 'administrador') {
+    if (!ra) {
+      return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
     }
 
     // Buscar usuário por email
@@ -28,28 +47,26 @@ const cadastro = async (req, res) => {
       return res.status(400).json({ mensagem: 'Esta função não existe.' });
     }
 
-    // Validação do RA
-    let raFinal = null;
+    raFinal = ra; // mantém o RA como string com zeros à esquerda
+  }
+  
+// Validação da senha
+if (!senha || senha.length < 6 || senha.length > 8) {
+  return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
+}
 
-    if (funcao === 'aluno' || funcao === 'tecnico' || funcao === 'adm') {
-      if (!ra) {
-        return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
-      }
+// Verifica se contém pelo menos um número
+if (!/\d/.test(senha)) {
+  return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
+}
 
-      // RA deve conter exatamente 8 dígitos (incluindo zeros à esquerda)
-      const raRegex = /^\d{8}$/;
-      if (!raRegex.test(ra)) {
-        return res.status(400).json({ mensagem: 'O RA deve conter exatamente 8 números.' });
-      }
-
-      // Verifica se RA já existe
-      const usuarioComRa = await read('usuarios', `ra = '${ra}'`);
-      if (usuarioComRa && usuarioComRa.length > 0) {
-        return res.status(400).json({ mensagem: 'RA já cadastrado!' });
-      }
-
-      raFinal = ra; // mantém o RA como string com zeros à esquerda
-    }
+  const cadastroData = {
+    nome: nome,
+    email: email, 
+    ra: raFinal,
+    senha: senha,
+    funcao: funcao
+  };
     
     // Validação da senha
     if (!senha || senha.length < 6 || senha.length > 8) {
@@ -60,14 +77,6 @@ const cadastro = async (req, res) => {
     if (!/\d/.test(senha)) {
       return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
     }
-
-    const cadastroData = {
-      nome: nome,
-      email: email, 
-      ra: raFinal,
-      senha: senha,
-      funcao: funcao
-    };
       
     const cadastroId = await criarCadastro(cadastroData);         
     res.status(201).json({ mensagem: 'Cadastro realizado com sucesso.', cadastroId });
