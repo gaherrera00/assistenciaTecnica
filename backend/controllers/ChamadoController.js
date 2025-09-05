@@ -1,5 +1,4 @@
 import { listarChamados, obterChamadoPorId, criarChamado, atualizarChamado, excluirChamado } from "../models/chamado.js";
-import { excluirApontamento } from "../models/apontamentos.js";
 import { read, deleteRecord } from '../config/database.js';
 
 const listarChamadosController = async (req, res) => {
@@ -16,7 +15,7 @@ const listarChamadosController = async (req, res) => {
         if (funcao === 'aluno') {
             // Alunos veem apenas seus próprios chamados
             chamados = await listarChamados(`ra = '${ra}'`);
-        } else if (funcao === 'tecnico' || funcao === 'técnico' || funcao === 'gerente' || funcao === 'administrador') {
+        } else if (funcao === 'tecnico' || funcao === 'técnico' || funcao === 'gerente' || funcao === 'administrador' || funcao === 'adm') {
             // Técnicos, gerentes e administradores veem todos os chamados
             chamados = await listarChamados();
         } else {
@@ -44,76 +43,54 @@ const obterChamadoPorIdController = async (req, res) => {
 
 const criarChamadoController = async (req, res) => {
     try {
-        const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico } = req.body;
+        const { nome, ra, turma, id_patrimonio, sala, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
+        // Validações
         if (!nome || typeof nome !== "string" || nome.trim().length < 3) {
-            return res.status(400).json({ mensagem: "Nome é obrigatório e deve ter ao menos 3 caracteres." });
+            return res.status(400).json({ mensagem: "Nome é obrigatório e deve ter pelo menos 3 caracteres." });
         }
 
-        if (ra) {
-            if (typeof ra !== "string" || !/^\d{8}$/.test(ra)) {
-                return res.status(400).json({ mensagem: "RA deve conter exatamente 8 números." });
-            }
-
-            // busca usuário com esse RA
-            const usuario = await read("usuarios", `ra = '${ra}'`);
-            if (!usuario || usuario.length === 0) {
-                return res.status(400).json({ mensagem: "Nenhum usuário encontrado com este RA." });
-            }
-
-            if (usuario[0].funcao !== "aluno") {
-                return res.status(400).json({ mensagem: "Somente alunos possuem RA." });
-            }
+        if (!ra) {
+            return res.status(400).json({ mensagem: "RA é obrigatório." });
         }
 
-        if (!turma || typeof turma !== "string" || turma.trim().length < 2) {
-            return res.status(400).json({ mensagem: "Turma é obrigatória e deve ter ao menos 2 caracteres." });
+        if (!sala || typeof sala !== "string" || sala.trim().length < 1) {
+            return res.status(400).json({ mensagem: "Sala é obrigatória." });
         }
 
-        const validarPatrimonio = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
-        if (!validarPatrimonio || validarPatrimonio.length === 0) {
+        if (!id_patrimonio) {
+            return res.status(400).json({ mensagem: "ID do patrimônio é obrigatório." });
+        }
+
+        // Verificar se o RA existe na tabela de usuários
+        const usuarioResults = await read('usuarios', `ra = '${ra}'`);
+        const usuarioExiste = Array.isArray(usuarioResults) ? usuarioResults.length > 0 : usuarioResults !== null;
+        
+        if (!usuarioExiste) {
+            return res.status(400).json({ mensagem: "RA informado não pertence a nenhum usuário cadastrado." });
+        }
+
+        // Verificar se o patrimônio existe
+        const patrimonioResults = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
+        const validarPatrimonio = Array.isArray(patrimonioResults) ? patrimonioResults.length > 0 : patrimonioResults !== null;
+        
+        if (!validarPatrimonio) {
             return res.status(400).json({ mensagem: "Patrimônio não encontrado." });
-        }
-
-        if (!sintoma || typeof sintoma !== "string" || sintoma.trim().length < 5) {
-            return res.status(400).json({ mensagem: "Sintoma é obrigatório e deve ter ao menos 5 caracteres." });
-        }
-
-        if (detalhes && typeof detalhes !== "string") {
-            return res.status(400).json({ mensagem: "Detalhes devem ser texto." });
-        }
-
-        if (inicio && isNaN(Date.parse(inicio))) {
-            return res.status(400).json({ mensagem: "Data de início inválida." });
-        }
-
-        if (frequencia && typeof frequencia !== "string") {
-            return res.status(400).json({ mensagem: "Frequência deve ser texto." });
-        }
-
-        if (historico && typeof historico !== "string") {
-            return res.status(400).json({ mensagem: "Histórico deve ser texto." });
         }
 
         // monta o objeto com os dados
         const chamadoData = {
-            nome: nome ?? null,
-            ra: ra ?? null,
-            turma: turma ?? null,
-            id_patrimonio: id_patrimonio,
-            sintoma: sintoma ?? null,
-            detalhes: detalhes ?? null,
-            inicio: inicio ?? null,
-            frequencia: frequencia ?? null,
-            historico: historico ?? null
+            nome: nome,
+            ra: ra,
+            sala: sala,
+            turma: turma || null,
+            patrimonios_id: id_patrimonio, // Note: campo correto é patrimonios_id na tabela
+            sintoma: sintoma || null,
+            detalhes: detalhes || null,
+            inicio: inicio || null,
+            frequencia: frequencia || null,
+            historico: historico || null
         };
-
-        // Verificar se o RA existe na tabela de usuários
-        const usuarioExiste = await read('usuarios', `ra = '${ra}'`);
-        if (!usuarioExiste || usuarioExiste.length === 0) {
-            return res.status(400).json({ mensagem: "RA informado não pertence a nenhum usuário cadastrado." });
-        }
-
 
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso.', chamadoId });
@@ -131,7 +108,7 @@ const atualizarChamadoController = async (req, res) => {
         }
 
         const chamadoId = req.params.id;
-        const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico, status } = req.body;
+        const { nome, ra, turma, sala, patrimonios_id, sintoma, detalhes, inicio, frequencia, historico, status } = req.body;
         const { funcao } = req.user;
 
         // Verificar permissões baseado na função
@@ -144,12 +121,16 @@ const atualizarChamadoController = async (req, res) => {
             return res.status(400).json({ mensagem: "Nome deve ter ao menos 3 caracteres." });
         }
 
-        if (ra && (typeof ra !== "number" || ra.toString().length < 1)) {
+        if (ra && typeof ra !== "string") {
             return res.status(400).json({ mensagem: "RA inválido." });
         }
 
         if (turma && (typeof turma !== "string" || turma.trim().length < 2)) {
             return res.status(400).json({ mensagem: "Turma inválida." });
+        }
+
+        if (sala && (typeof sala !== "string" || sala.trim().length < 1)) {
+            return res.status(400).json({ mensagem: "Sala inválida." });
         }
 
         if (sintoma && (typeof sintoma !== "string" || sintoma.trim().length < 5)) {
@@ -179,27 +160,28 @@ const atualizarChamadoController = async (req, res) => {
 
         // monta o objeto com os dados
         const chamadoData = {
-            nome: nome ?? null,
-            ra: ra ?? null,
-            turma: turma ?? null,
-            id_patrimonio: id_patrimonio ?? null,
-            sintoma: sintoma ?? null,
-            detalhes: detalhes ?? null,
-            inicio: inicio ?? null,
-            frequencia: frequencia ?? null,
-            historico: historico ?? null,
-            status: status ?? null
+            nome: nome || undefined,
+            ra: ra || undefined,
+            turma: turma || undefined,
+            sala: sala || undefined,
+            patrimonios_id: patrimonios_id || undefined,
+            sintoma: sintoma || undefined,
+            detalhes: detalhes || undefined,
+            inicio: inicio || undefined,
+            frequencia: frequencia || undefined,
+            historico: historico || undefined,
+            status: status || undefined
         };
 
-        // Remover campos undefined/null
+        // Remover campos undefined
         Object.keys(chamadoData).forEach(key => {
-            if (chamadoData[key] === null || chamadoData[key] === undefined) {
+            if (chamadoData[key] === undefined) {
                 delete chamadoData[key];
             }
         });
 
         await atualizarChamado(chamadoId, chamadoData);
-        res.status(201).json({ mensagem: 'Chamado alterado com sucesso.' });
+        res.status(200).json({ mensagem: 'Chamado alterado com sucesso.' });
     } catch (err) {
         console.error('Erro ao atualizar chamado: ', err);
         res.status(500).json({ mensagem: 'Erro ao atualizar chamado.' });
@@ -214,25 +196,27 @@ const excluirChamadoController = async (req, res) => {
         }
 
         // Verificar se o usuário é administrador
-        if (req.user.funcao !== 'administrador' && req.user.funcao !== 'gerente') {
+        if (req.user.funcao !== 'administrador' && req.user.funcao !== 'gerente' && req.user.funcao !== 'adm') {
             return res.status(403).json({ mensagem: 'Apenas administradores podem excluir chamados' });
         }
 
         const chamadoId = req.params.id;
 
         // Verificar se o chamado existe
-        const chamado = await read('chamados', `id_chamado = ${chamadoId}`);
-        if (!chamado || chamado.length === 0) {
+        const chamadoResults = await read('chamados', `id_chamado = ${chamadoId}`);
+        const chamado = Array.isArray(chamadoResults) ? chamadoResults[0] : chamadoResults;
+        
+        if (!chamado) {
             return res.status(404).json({ mensagem: 'Chamado não encontrado' });
         }
 
         // Verificar se o chamado está em andamento
-        if (chamado[0].status !== 'em andamento') {
+        if (chamado.status !== 'em andamento') {
             return res.status(400).json({ mensagem: 'Apenas chamados em andamento podem ser excluídos' });
         }
 
         // Primeiro, excluir todos os apontamentos relacionados ao chamado
-        await deleteRecord('apontamentos', `id_chamado = ${chamadoId}`);
+        await deleteRecord('apontamentos', `chamado_id = ${chamadoId}`);
 
         // Depois, excluir o chamado
         await excluirChamado(chamadoId);

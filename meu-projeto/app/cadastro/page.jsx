@@ -9,7 +9,6 @@ export default function Cadastro() {
     nome: "",
     email: "",
     senha: "",
-    ra: "",
     funcao: "",
   });
   const [loading, setLoading] = useState(false);
@@ -19,9 +18,9 @@ export default function Cadastro() {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [id]: value
+      [id]: value,
     }));
   };
 
@@ -30,20 +29,10 @@ export default function Cadastro() {
     setError("");
     setSuccess("");
 
-    if (!/^\d{8}$/.test(formData.ra)) {
-      setError("O RA deve conter exatamente 8 números.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const cadastroData = {
-        ...formData,
-        ra: parseInt(formData.ra),
-      };
-
-      await authAPI.cadastro(cadastroData);
+      await authAPI.cadastro(formData);
       setSuccess("Cadastro realizado com sucesso! Redirecionando...");
 
       setTimeout(() => {
@@ -110,26 +99,6 @@ export default function Cadastro() {
             className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
           />
 
-          {/* RA */}
-          <label htmlFor="ra" className="sr-only">
-            RA
-          </label>
-          
-          <input
-            type="text"
-            id="ra"
-            placeholder="Seu RA (8 dígitos)"
-            value={formData.ra}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, "");
-              if (value.length <= 8) {
-                setFormData({ ...formData, ra: value });
-              }
-            }}
-            required
-            maxLength={8}
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
-          />
           {/* Senha */}
           <label htmlFor="senha" className="sr-only">
             Senha
@@ -160,7 +129,7 @@ export default function Cadastro() {
             <option value="">Selecione sua função</option>
             <option value="aluno">Aluno</option>
             <option value="tecnico">Técnico</option>
-            <option value="gerente">Gerente</option>
+            <option value="administrador">Administrador</option>
           </select>
 
           {/* Botão de cadastro */}
