@@ -19,7 +19,7 @@ const cadastro = async (req, res) => {
   }
 
   //Validação da função
-  const verificarFuncao = ['aluno', 'tecnico', 'adm'];
+  const verificarFuncao = ['aluno', 'tecnico', 'administrador'];
 
   if (!verificarFuncao.includes(funcao)) {
     return res.status(400).json({ mensagem: 'Esta função não existe.' })
@@ -28,7 +28,7 @@ const cadastro = async (req, res) => {
   // Validação do RA
   let raFinal = null;
 
-  if (funcao === 'aluno' || funcao === 'tecnico' || funcao === 'Adm') {
+  if (funcao === 'aluno' || funcao === 'tecnico' || funcao === 'administrador') {
     if (!ra) {
       return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
     }

@@ -16,8 +16,8 @@ const listarChamadosController = async (req, res) => {
         if (funcao === 'aluno') {
             // Alunos veem apenas seus próprios chamados
             chamados = await listarChamados(`ra = '${ra}'`);
-        } else if (funcao === 'tecnico' || funcao === 'técnico' || funcao === 'administrador') {
-            // Técnicos, gerentes e administradores veem todos os chamados
+        } else if (funcao === 'tecnico' || funcao === 'administrador') {
+            // Técnicos e administradores veem todos os chamados
             chamados = await listarChamados();
         } else {
             console.log('Função não reconhecida:', funcao);

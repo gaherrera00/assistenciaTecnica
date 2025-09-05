@@ -45,7 +45,7 @@ export default function Dashboard() {
 
   const handleAceitarChamado = async (chamadoId) => {
     // Verificar se o técnico já tem um chamado atribuído
-    if (user?.funcao === "tecnico" || user?.funcao === "técnico") {
+    if (user?.funcao === "tecnico") {
       const chamadoAtual = chamados.find((c) => c.status === "em andamento");
       if (chamadoAtual && chamadoAtual.id_chamado !== chamadoId) {
         alert(
@@ -290,7 +290,7 @@ export default function Dashboard() {
             )}
 
             {/* Tabela para TÉCNICOS - Foco técnico com botão de aceitar */}
-            {(user?.funcao === "tecnico" || user?.funcao === "técnico") && (
+            {(user?.funcao === "tecnico") && (
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="p-4 bg-green-50 border-b">
                   <h3 className="text-lg font-semibold text-green-800">
