@@ -5,6 +5,7 @@ Sistema de gerenciamento de chamados técnicos desenvolvido com Next.js (fronten
 ## 🚀 Como Executar
 
 ### Pré-requisitos
+
 - Node.js (versão 18 ou superior)
 - MySQL (versão 8.0 ou superior)
 - npm ou yarn
@@ -74,7 +75,7 @@ O frontend estará rodando em `http://localhost:3000`
 
 - **Aluno**: Pode criar e visualizar seus próprios chamados
 - **Técnico**: Acesso completo aos chamados e funcionalidades técnicas
-- **Gerente**: Acesso administrativo ao sistema
+- **Administrador**: Acesso administrativo ao sistema
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -94,16 +95,19 @@ O frontend estará rodando em `http://localhost:3000`
 ## 🔧 Solução de Problemas
 
 ### Backend não conecta ao banco
+
 - Verifique se o MySQL está rodando
 - Confirme as credenciais no arquivo `.env`
 - Execute o script SQL para criar o banco e tabelas
 
 ### Frontend não carrega dados
+
 - Verifique se o backend está rodando na porta 3001
 - Confirme se o CORS está configurado corretamente
 - Verifique o console do navegador para erros
 
 ### Erro de autenticação
+
 - Verifique se o token JWT está sendo enviado corretamente
 - Confirme se a chave JWT_SECRET está configurada
 - Verifique se o usuário existe no banco de dados

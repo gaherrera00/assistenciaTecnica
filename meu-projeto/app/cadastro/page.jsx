@@ -19,9 +19,9 @@ export default function Cadastro() {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [id]: value
+      [id]: value,
     }));
   };
 
@@ -114,7 +114,7 @@ export default function Cadastro() {
           <label htmlFor="ra" className="sr-only">
             RA
           </label>
-          
+
           <input
             type="text"
             id="ra"
@@ -160,7 +160,7 @@ export default function Cadastro() {
             <option value="">Selecione sua função</option>
             <option value="aluno">Aluno</option>
             <option value="tecnico">Técnico</option>
-            <option value="gerente">Gerente</option>
+            <option value="administrador">Administrador</option>
           </select>
 
           {/* Botão de cadastro */}

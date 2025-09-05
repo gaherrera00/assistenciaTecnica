@@ -16,7 +16,7 @@ const listarChamadosController = async (req, res) => {
         if (funcao === 'aluno') {
             // Alunos veem apenas seus próprios chamados
             chamados = await listarChamados(`ra = '${ra}'`);
-        } else if (funcao === 'tecnico' || funcao === 'técnico' || funcao === 'gerente' || funcao === 'administrador') {
+        } else if (funcao === 'tecnico' || funcao === 'técnico' || funcao === 'administrador') {
             // Técnicos, gerentes e administradores veem todos os chamados
             chamados = await listarChamados();
         } else {
@@ -47,7 +47,7 @@ const criarChamadoController = async (req, res) => {
         const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
         const validarRa = await read('usuarios', `ra = ${ra}`);
-        if (!validarRa){
+        if (!validarRa) {
             return res.status(400).json({ mensagem: "RA não encontrado." });
         }
 
@@ -66,8 +66,8 @@ const criarChamadoController = async (req, res) => {
             inicio: inicio ?? null,
             frequencia: frequencia ?? null,
             historico: historico ?? null
-          };
-          console.log(chamadoData)
+        };
+        console.log(chamadoData)
 
         // Verificar se o RA existe na tabela de usuários
         const usuarioExiste = await read('usuarios', `ra = '${ra}'`);
@@ -92,7 +92,7 @@ const excluirChamadoController = async (req, res) => {
         }
 
         // Verificar se o usuário é administrador
-        if (req.user.funcao !== 'administrador' && req.user.funcao !== 'gerente') {
+        if (req.user.funcao !== 'administrador') {
             return res.status(403).json({ mensagem: 'Apenas administradores podem excluir chamados' });
         }
 
