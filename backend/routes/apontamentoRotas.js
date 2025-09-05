@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarApontamentosController, obterApontamentoPorIdController, criarApontamentoController, excluirApontamentoController } from '../controllers/ApontamentoController.js';
+import { listarApontamentosController, obterApontamentoPorIdController, criarApontamentoController } from '../controllers/ApontamentoController.js';
 
 const router = express.Router();
 
@@ -7,8 +7,6 @@ router.get('/', listarApontamentosController);
 router.get('/:id', obterApontamentoPorIdController);
 
 router.post('/', criarApontamentoController);
-
-router.delete('/:id', excluirApontamentoController);
 
 router.options('/', (req, res) => {
     res.setHeader('Allow', 'GET, POST, OPTIONS');

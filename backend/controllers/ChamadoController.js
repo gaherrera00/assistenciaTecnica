@@ -1,7 +1,7 @@
-import { listarChamados, obterChamadoPorId, criarChamado, atualizarChamado, excluirChamado } from "../models/chamado.js";
+import { listarChamados, obterChamadoPorId, criarChamado, excluirChamado } from "../models/chamado.js";
 import { read, deleteRecord } from '../config/database.js';
 
-const listarChamadosController = async (req, res) => {
+export const listarChamadosController = async (req, res) => {
     try {
         // Verificar se o usuário está autenticado
         if (!req.user) {
@@ -30,7 +30,7 @@ const listarChamadosController = async (req, res) => {
     };
 };
 
-const obterChamadoPorIdController = async (req, res) => {
+export const obterChamadoPorIdController = async (req, res) => {
     try {
         const id = req.params.id;
         const chamado = await obterChamadoPorId(id);
@@ -41,45 +41,14 @@ const obterChamadoPorIdController = async (req, res) => {
     }
 };
 
-const criarChamadoController = async (req, res) => {
+export const criarChamadoController = async (req, res) => {
     try {
-        const { nome, ra, turma, id_patrimonio, sala, sintoma, detalhes, inicio, frequencia, historico } = req.body;
-
-        const validarRa = await read('usuarios', `ra = ${ra}`);
-        if (!validarRa) {
-            return res.status(400).json({ mensagem: "RA não encontrado." });
-        }
-
-        if (!id_patrimonio) {
-            return res.status(400).json({ mensagem: "ID do patrimônio é obrigatório." });
-        }
-
-        // Verificar se o RA existe na tabela de usuários
-        const usuarioResults = await read('usuarios', `ra = '${ra}'`);
-        const usuarioExiste = Array.isArray(usuarioResults) ? usuarioResults.length > 0 : usuarioResults !== null;
-        
-        if (!usuarioExiste) {
-            return res.status(400).json({ mensagem: "RA informado não pertence a nenhum usuário cadastrado." });
-        }
-
-        // Verificar se o patrimônio existe
-        const patrimonioResults = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
-        const validarPatrimonio = Array.isArray(patrimonioResults) ? patrimonioResults.length > 0 : patrimonioResults !== null;
-        
-        if (!validarPatrimonio) {
-            return res.status(400).json({ mensagem: "Patrimônio não encontrado." });
-        }
+        const { nome, detalhes } = req.body;
 
         // monta o objeto com os dados
         const chamadoData = {
             nome: nome ?? null,
-            turma: turma ?? null,
-            id_patrimonio: id_patrimonio,
-            sintoma: sintoma ?? null,
-            detalhes: detalhes ?? null,
-            inicio: inicio ?? null,
-            frequencia: frequencia ?? null,
-            historico: historico ?? null
+            detalhes: detalhes ?? null
         };
         console.log(chamadoData)
 
@@ -91,7 +60,7 @@ const criarChamadoController = async (req, res) => {
     }
 };
 
-const excluirChamadoController = async (req, res) => {
+export const excluirChamadoController = async (req, res) => {
     try {
         // Verificar se o usuário está autenticado
         if (!req.user) {
@@ -130,5 +99,3 @@ const excluirChamadoController = async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao excluir chamado.' });
     }
 };
-
-export { listarChamadosController, obterChamadoPorIdController, criarChamadoController, excluirChamadoController };

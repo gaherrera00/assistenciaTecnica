@@ -1,9 +1,9 @@
-import { listarApontamentos, obterApontamentoPorId, criarApontamento, excluirApontamento } from '../models/apontamentos.js';
+import { listarApontamentos, obterApontamentoPorId, criarApontamento } from '../models/apontamentos.js';
 import { read } from '../config/database.js';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 
-const listarApontamentosController = async (req, res) => {
+export const listarApontamentosController = async (req, res) => {
     try {
         const apontamentos = await listarApontamentos();
         res.status(200).json(apontamentos);
@@ -13,7 +13,7 @@ const listarApontamentosController = async (req, res) => {
     }
 };
 
-const obterApontamentoPorIdController = async (req, res) => {
+export const obterApontamentoPorIdController = async (req, res) => {
     try {
         const id = req.params.id;
         const apontamentos = await obterApontamentoPorId(id);
@@ -24,7 +24,7 @@ const obterApontamentoPorIdController = async (req, res) => {
     }
 };
 
-const criarApontamentoController = async (req, res) => {
+export const criarApontamentoController = async (req, res) => {
     try {
         const { id_chamado, id_tecnico, descricao, comeco, fim, duracao, criado_em } = req.body;
 
@@ -82,16 +82,3 @@ const criarApontamentoController = async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao criar apontamentos.' });
     }
 };
-
-const excluirApontamentoController = async (req, res) => {
-    try {
-        const apontamentoId = req.params.id;
-        await excluirApontamento(apontamentoId);
-        res.status(200).json({ mensagem: 'Apontamento excluido com sucesso.' });
-    } catch (err) {
-        console.error('Erro ao excluir apontamento: ', err);
-        res.status(500).json({ mensagem: 'Erro ao excluir apontamento.' });
-    }
-}
-
-export { listarApontamentosController, obterApontamentoPorIdController, criarApontamentoController, excluirApontamentoController };
