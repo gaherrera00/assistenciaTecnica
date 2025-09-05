@@ -28,7 +28,7 @@ const cadastro = async (req, res) => {
   // Validação do RA
   let raFinal = null;
 
-  if (funcao === 'aluno' || funcao === 'tecnico' || funcao === 'adm') {
+  if (funcao === 'aluno' || funcao === 'tecnico' || funcao === 'Adm') {
     if (!ra) {
       return res.status(400).json({ mensagem: 'Aluno deve possuir um RA.' });
     }

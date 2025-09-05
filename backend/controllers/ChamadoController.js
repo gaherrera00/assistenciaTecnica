@@ -46,6 +46,11 @@ const criarChamadoController = async (req, res) => {
     try {
         const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico } = req.body;
 
+        const validarRa = await read('usuarios', `ra = ${ra}`);
+        if (!validarRa){
+            return res.status(400).json({ mensagem: "RA não encontrado." });
+        }
+
         const validarPatrimonio = await read('patrimonios', `id_patrimonio = '${id_patrimonio}'`);
         if (!validarPatrimonio || validarPatrimonio.length === 0) {
             return res.status(400).json({ mensagem: "Patrimônio não encontrado." });
@@ -76,89 +81,6 @@ const criarChamadoController = async (req, res) => {
     } catch (err) {
         console.error('Erro ao criar chamado: ', err);
         res.status(500).json({ mensagem: 'Erro ao criar chamado.' });
-    }
-};
-
-const atualizarChamadoController = async (req, res) => {
-    try {
-        // Verificar se o usuário está autenticado
-        if (!req.user) {
-            return res.status(401).json({ mensagem: 'Usuário não autenticado' });
-        }
-
-        const chamadoId = req.params.id;
-        const { nome, ra, turma, id_patrimonio, sintoma, detalhes, inicio, frequencia, historico, status } = req.body;
-        const { funcao } = req.user;
-
-        // Verificar permissões baseado na função
-        if (funcao === 'aluno') {
-            return res.status(403).json({ mensagem: 'Alunos não podem atualizar chamados' });
-        }
-
-        // Validações
-        if (nome && (typeof nome !== "string" || nome.trim().length < 3)) {
-            return res.status(400).json({ mensagem: "Nome deve ter ao menos 3 caracteres." });
-        }
-
-        if (ra && (typeof ra !== "number" || ra.toString().length < 1)) {
-            return res.status(400).json({ mensagem: "RA inválido." });
-        }
-
-        if (turma && (typeof turma !== "string" || turma.trim().length < 2)) {
-            return res.status(400).json({ mensagem: "Turma inválida." });
-        }
-
-        if (sintoma && (typeof sintoma !== "string" || sintoma.trim().length < 5)) {
-            return res.status(400).json({ mensagem: "Sintoma deve ter ao menos 5 caracteres." });
-        }
-
-        if (detalhes && typeof detalhes !== "string") {
-            return res.status(400).json({ mensagem: "Detalhes devem ser texto." });
-        }
-
-        if (inicio && isNaN(Date.parse(inicio))) {
-            return res.status(400).json({ mensagem: "Data de início inválida." });
-        }
-
-        if (frequencia && typeof frequencia !== "string") {
-            return res.status(400).json({ mensagem: "Frequência deve ser texto." });
-        }
-
-        if (historico && typeof historico !== "string") {
-            return res.status(400).json({ mensagem: "Histórico deve ser texto." });
-        }
-
-        // Validar status se fornecido
-        if (status && !['pendente', 'em andamento', 'concluído'].includes(status)) {
-            return res.status(400).json({ mensagem: "Status inválido." });
-        }
-
-        // monta o objeto com os dados
-        const chamadoData = {
-            nome: nome ?? null,
-            ra: ra ?? null,
-            turma: turma ?? null,
-            id_patrimonio: id_patrimonio ?? null,
-            sintoma: sintoma ?? null,
-            detalhes: detalhes ?? null,
-            inicio: inicio ?? null,
-            frequencia: frequencia ?? null,
-            historico: historico ?? null,
-            status: status ?? null
-        };
-
-        // Remover campos undefined/null
-        Object.keys(chamadoData).forEach(key => {
-            if (chamadoData[key] === null || chamadoData[key] === undefined) {
-                delete chamadoData[key];
-            }
-        });
-
-        await atualizarChamado(chamadoId, chamadoData);
-        res.status(201).json({ mensagem: 'Chamado alterado com sucesso.' });
-    } catch (err) {
-        console.error('Erro ao atualizar chamado: ', err);
-        res.status(500).json({ mensagem: 'Erro ao atualizar chamado.' });
     }
 };
 
