@@ -35,8 +35,8 @@ export const criarApontamentoController = async (req, res) => {
             descricao: descricao
         }
 
-        const apontamento = await criarApontamento(apontamentoData);
-        res.status(201).json({ mensagem: "Apontamento criado com sucesso.", apontamento });
+        const apontamentoId = await criarApontamento(apontamentoData);
+        res.status(201).json({ mensagem: "Apontamento criado com sucesso.", apontamentoId });
 
     //     const apontamentoId = await criarApontamento(apontamentoData);
 

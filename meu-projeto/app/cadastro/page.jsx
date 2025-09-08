@@ -1,180 +1,49 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authAPI } from "../../utils/api";
+import React from "react";
 
-export default function Cadastro() {
-  const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    senha: "",
-    funcao: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const router = useRouter();
-
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    setLoading(true);
-
-    try {
-      await authAPI.cadastro(formData);
-      setSuccess("Cadastro realizado com sucesso! Redirecionando...");
-
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
-    } catch (error) {
-      setError(error.message || "Erro ao realizar cadastro");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+export default function App() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg max-w-sm w-full text-center">
-        <div className="mb-6">
-          <img
-            src="/logo.png"
-            alt="Zelus Assistência Técnica"
-            className="w-44 mx-auto"
-          />
+    <div className="min-h-screen font-sans bg-white">
+      {/* Navbar fixa no topo */}
+      <nav className="bg-dark-green fixed w-full z-20 top-0 start-0 border-b border-gray-200">
+        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+          {/* Logo / título */}
+          <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
+            Meu Projeto
+          </span>
+
+          {/* Ícones de atalho */}
+          <div className="flex items-center space-x-4 text-white">
+            <i className="fas fa-home hover:text-light-green cursor-pointer transition"></i>
+            <i className="fas fa-user hover:text-light-green cursor-pointer transition"></i>
+            <i className="fas fa-cog hover:text-light-green cursor-pointer transition"></i>
+          </div>
         </div>
+      </nav>
 
-        <h2 className="text-2xl font-medium text-gray-800 mb-5">Criar Conta</h2>
+      {/* Conteúdo principal */}
+      <main className="flex flex-col items-center justify-center min-h-screen px-4">
+        <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md mt-20">
+          <h2 className="text-2xl font-semibold mb-4 text-dark-green">
+            Bem-vindo ao React!
+          </h2>
+          <p className="text-gray-700 mb-4">
+            Esse layout foi convertido de HTML puro para React mantendo as cores
+            e classes originais.
+          </p>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm">
-            {success}
-          </div>
-        )}
-
-        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-          {/* Nome completo */}
-          <label htmlFor="nome" className="sr-only">
-            Nome Completo
-          </label>
-          <input
-            type="text"
-            id="nome"
-            placeholder="Seu nome completo"
-            value={formData.nome}
-            onChange={handleChange}
-            required
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
-          />
-
-          {/* E-mail */}
-          <label htmlFor="email" className="sr-only">
-            E-mail
-          </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="exemplo@email.com"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
-          />
-
-          {/* RA */}
-          <label htmlFor="ra" className="sr-only">
-            RA
-          </label>
-
-          <input
-            type="text"
-            id="ra"
-            placeholder="Seu RA (8 dígitos)"
-            value={formData.ra}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, "");
-              if (value.length <= 8) {
-                setFormData({ ...formData, ra: value });
-              }
-            }}
-            required
-            maxLength={8}
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
-          />
-          {/* Senha */}
-          <label htmlFor="senha" className="sr-only">
-            Senha
-          </label>
-          <input
-            type="password"
-            id="senha"
-            placeholder="Crie uma senha (6-8 caracteres)"
-            value={formData.senha}
-            onChange={handleChange}
-            required
-            minLength={6}
-            maxLength={8}
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
-          />
-
-          {/* Função */}
-          <label htmlFor="funcao" className="sr-only">
-            Função
-          </label>
-          <select
-            id="funcao"
-            value={formData.funcao}
-            onChange={handleChange}
-            required
-            className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent text-black"
-          >
-            <option value="">Selecione sua função</option>
-            <option value="aluno">Aluno</option>
-            <option value="tecnico">Técnico</option>
-            <option value="administrador">Administrador</option>
-          </select>
-
-          {/* Botão de cadastro */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="p-3 bg-[#084438] text-white border-none rounded-lg text-base cursor-pointer hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Cadastrando..." : "Cadastrar"}
-          </button>
-
-          <div className="mt-5 text-sm text-gray-600 tracking-tight">
-            Já tem uma conta?
-          </div>
-
-          <Link href="/login">
-            <button
-              type="button"
-              className="p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm cursor-pointer text-gray-600 hover:bg-gray-100 transition-colors w-full"
-            >
-              Entrar
+          <div className="mt-6 flex gap-4 flex-wrap">
+            <button className="bg-accent-green hover:bg-dark-green text-white px-4 py-2 rounded-lg shadow transition flex items-center">
+              <i className="fas fa-plus mr-2"></i>
+              Adicionar
             </button>
-          </Link>
-        </form>
-      </div>
+            <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow transition flex items-center">
+              <i className="fas fa-trash mr-2"></i>
+              Excluir
+            </button>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
