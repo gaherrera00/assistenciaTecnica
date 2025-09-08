@@ -7,13 +7,15 @@ export const listarChamadosController = async (req, res) => {
         if (!req.user) return res.status(400).json({ mensagem: 'Usuário não autenticado' });
 
         const { funcao, id } = req.user;
+        console.log(req.user);
+        console.log(funcao);
         let chamados;
 
-        if (funcao === 'aluno') {
+        if (funcao == 'aluno') {
             // Aluno: só vê seus próprios chamados
             chamados = await listarChamados(`criado_por = ${id}`);
         } 
-        else if (funcao === 'tecnico') {
+        else if (funcao == 'tecnico') {
             // Técnico: pegar os pools que ele pertence
             const pools = await read('pool_tecnico', `id_tecnico = ${id}`);
             const poolIds = pools.map(p => p.id_pool);
@@ -22,7 +24,7 @@ export const listarChamadosController = async (req, res) => {
             
             chamados = await listarChamados(`id_pool IN (${poolIds.join(',')})`);
         } 
-        else if (funcao === 'administrador') {
+        else if (funcao == 'administrador') {
             chamados = await listarChamados();
         } 
         else {
