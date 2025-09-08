@@ -1,5 +1,5 @@
 import express from 'express';
-import { listarUsuariosController, obterUsuarioPorIdController, excluirUsuarioController, loginController, cadastroController } from '../controllers/UsuarioController.js';
+import { listarUsuariosController, obterUsuarioPorIdController, excluirUsuarioController, loginController, cadastroController, createTechnicianController } from '../controllers/UsuarioController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -9,6 +9,7 @@ router.get('/:id', authMiddleware, obterUsuarioPorIdController);
 
 router.post('/login', loginController);
 router.post('/cadastro', cadastroController);
+router.post('/createTechnician', authMiddleware, createTechnicianController);
 
 router.delete('/:id', authMiddleware, excluirUsuarioController);
 

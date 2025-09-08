@@ -1,12 +1,13 @@
 import express from 'express';
 import { listarApontamentosController, obterApontamentoPorIdController, criarApontamentoController } from '../controllers/ApontamentoController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.get('/', listarApontamentosController);
 router.get('/:id', obterApontamentoPorIdController);
 
-router.post('/', criarApontamentoController);
+router.post("/chamados/:id_chamado", authMiddleware, criarApontamentoController);
 
 router.options('/', (req, res) => {
     res.setHeader('Allow', 'GET, POST, OPTIONS');

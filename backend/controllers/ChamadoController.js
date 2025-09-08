@@ -4,22 +4,28 @@ import { read, deleteRecord } from '../config/database.js';
 export const listarChamadosController = async (req, res) => {
     try {
         // Verificar se o usuário está autenticado
-        if (!req.user) {
-            return res.status(401).json({ mensagem: 'Usuário não autenticado' });
-        }
+        if (!req.user) return res.status(400).json({ mensagem: 'Usuário não autenticado' });
 
-        const { funcao, ra } = req.user;
+        const { funcao, id } = req.user;
         let chamados;
 
-        // Filtrar chamados baseado na função do usuário
         if (funcao === 'aluno') {
-            // Alunos veem apenas seus próprios chamados
-            chamados = await listarChamados(`ra = '${ra}'`);
-        } else if (funcao === 'tecnico' || funcao === 'técnico' || funcao === 'adm' || funcao === 'Adm' || funcao === 'ADM') {
-            // Técnicos, gerentes e administradores veem todos os chamados
+            // Aluno: só vê seus próprios chamados
+            chamados = await listarChamados(`criado_por = ${id}`);
+        } 
+        else if (funcao === 'tecnico') {
+            // Técnico: pegar os pools que ele pertence
+            const pools = await read('pool_tecnico', `id_tecnico = ${id}`);
+            const poolIds = pools.map(p => p.id_pool);
+            
+            if (poolIds.length === 0) return res.status(200).json([]);
+            
+            chamados = await listarChamados(`id_pool IN (${poolIds.join(',')})`);
+        } 
+        else if (funcao === 'administrador') {
             chamados = await listarChamados();
-        } else {
-            console.log('Função não reconhecida:', funcao);
+        } 
+        else {
             return res.status(403).json({ mensagem: `Função não autorizada: ${funcao}` });
         }
 
@@ -43,14 +49,15 @@ export const obterChamadoPorIdController = async (req, res) => {
 
 export const criarChamadoController = async (req, res) => {
     try {
-        const { nome, detalhes } = req.body;
+        const { nome, detalhes, id_pool } = req.body;
 
         // monta o objeto com os dados
         const chamadoData = {
             nome: nome ?? null,
-            detalhes: detalhes ?? null
+            detalhes: detalhes ?? null,
+            id_pool: id_pool ?? null,
+            criado_por: req.user.id
         };
-        console.log(chamadoData)
 
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso.', chamadoId });

@@ -40,3 +40,33 @@ export const excluirUsuario = async (id) => {
     throw error;
   }
 };
+
+// Criar técnico vinculado a um pool
+export async function createTechnician(data, id_pool) {
+  try {
+    data.senha = await generateHashedPassword(data.senha);
+
+    // Cria o usuário
+    const tecnicoId = await create('usuarios', {
+      nome: data.nome,
+      email: data.email,
+      senha: data.senha,
+      funcao: data.funcao
+    });
+    // Só cria a relação se id_pool existir
+    let relacaoTecId = null;
+    if (id_pool != null) {
+      relacaoTecId = await create('pool_tecnico', { 
+        id_pool, 
+        id_tecnico: tecnicoId
+      });
+    } else {
+      console.warn("id_pool não fornecido, relação pool_tecnico não criada.");
+    }
+
+    return { tecnicoId, relacaoTecId };
+  } catch (err) {
+    console.error('createTechnician error:', err);
+    throw err;
+  }
+}

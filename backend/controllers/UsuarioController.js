@@ -1,4 +1,4 @@
-import { listarUsuarios, obterUsuarioPorId, criarUsuario, excluirUsuario } from "../models/usuarios.js";
+import { listarUsuarios, obterUsuarioPorId, criarUsuario, excluirUsuario, createTechnician } from "../models/usuarios.js";
 import { read, compare } from "../config/database.js";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt.js";
@@ -147,6 +147,63 @@ export const loginController = async (req, res) => {
     res.status(500).json({ mensagem: "Erro ao fazer login" });
   }
 };
+
+export const createTechnicianController = async (req, res) => {
+  try {
+    const { nome, email, senha, funcao, id_pool } = req.body;
+
+    const emailRegex = /^[\w.-]+@(gmail|hotmail|outlook|exemplo)\.com$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ mensagem: "O email é inválido. Por favor, use @gmail, @hotmail, @outlook ou @exemplo." });
+  }
+
+  const usuario = await read('usuarios', `email = '${email}'`);
+
+  if (usuario) {
+    return res.status(400).json({ mensagem: 'Email já cadastrado!' })
+  }
+
+  //Validação da função
+  const verificarFuncao = ['aluno', 'tecnico', 'administrador'];
+
+  if (!verificarFuncao.includes(funcao)) {
+    return res.status(400).json({ mensagem: 'Esta função não existe.' })
+  }
+  
+// Validação da senha
+if (!senha || senha.length < 6 || senha.length > 8) {
+  return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
+}
+
+// Verifica se contém pelo menos um número
+if (!/\d/.test(senha)) {
+  return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
+}
+
+  const cadastroData = {
+    nome: nome,
+    email: email,
+    senha: senha,
+    funcao: funcao
+  };
+    
+    // Validação da senha
+    if (!senha || senha.length < 6 || senha.length > 8) {
+      return res.status(400).json({ mensagem: 'A senha deve ter entre 6 e 8 caracteres.' });
+    }
+
+    // Verifica se contém pelo menos um número
+    if (!/\d/.test(senha)) {
+      return res.status(400).json({ mensagem: 'A senha deve conter pelo menos um número.' });
+    }
+
+    const criarTecnico = await createTechnician(cadastroData, id_pool);
+    res.status(201).json({ mensagem: 'Tecnico criado com sucesso.', criarTecnico });
+  } catch (err) {
+    console.error('Erro ao criar tecnico: ', err);
+    res.status(500).json({ mensagem: 'Erro ao criar tecnico.' });
+  }
+}
 
 export const excluirUsuarioController = async (req, res) => {
     try {

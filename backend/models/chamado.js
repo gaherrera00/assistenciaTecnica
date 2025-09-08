@@ -2,7 +2,7 @@ import { create, readAll, read, deleteRecord } from '../config/database.js';
 
 export const listarChamados = async (where = null) => {
   try {
-    return await readAll('chamados', where);
+    return await readAll('chamados');
   } catch (error) {
     console.error('Erro ao listar chamados:', error);
     throw error;
