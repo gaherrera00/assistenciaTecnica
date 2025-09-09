@@ -1,5 +1,5 @@
 import { listarUsuarios, obterUsuarioPorId, criarUsuario, excluirUsuario, createTechnician } from "../models/usuarios.js";
-import { read, compare } from "../config/database.js";
+import { read, update, compare } from "../config/database.js";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt.js";
 
@@ -101,6 +101,11 @@ export const loginController = async (req, res) => {
       return res.status(404).json({ mensagem: "Usuário não encontrado" });
     }
 
+    // Verificar se o usuário está ativo
+    if (usuario.status === 'inativo') {
+      return res.status(403).json({ mensagem: "Usuário inativo. Entre em contato com o administrador." });
+    }
+
     // Verificar se a senha está correta (comparar a senha enviada com o hash armazenado)
     const senhaCorreta = await compare(senha, usuario.senha);
     
@@ -108,11 +113,6 @@ export const loginController = async (req, res) => {
 
     if (!senhaCorreta) {
       return res.status(401).json({ mensagem: "Senha ou email incorreto" });
-    }
-
-    // Verificar se o usuário está ativo
-    if (usuario.status === 'inativo') {
-      return res.status(403).json({ mensagem: "Usuário inativo. Entre em contato com o administrador." });
     }
 
     // Gerar o token JWT
@@ -203,7 +203,29 @@ if (!/\d/.test(senha)) {
     console.error('Erro ao criar tecnico: ', err);
     res.status(500).json({ mensagem: 'Erro ao criar tecnico.' });
   }
-}
+};
+
+export const atualizarStatusUsuarioController = async (req, res) => {
+  try {
+    const usuarioId = req.params.id;
+    const { status } = req.body;
+
+    console.log(`Atualizando usuário ${usuarioId} para status: ${status}`);
+
+    if (!["ativo", "inativo"].includes(status)) {
+      return res.status(400).json({ mensagem: "Status inválido." });
+    }
+
+    // Supondo que você tenha uma função update no seu read
+    await update("usuarios", { status }, `id_usuario = ${usuarioId}`);
+
+    console.log(`Status do usuário ${usuarioId} atualizado com sucesso.`);
+    res.status(200).json({ mensagem: "Status atualizado com sucesso.", status });
+  } catch (err) {
+    console.error("Erro ao atualizar status do usuário:", err);
+    res.status(500).json({ mensagem: "Erro ao atualizar status do usuário." });
+  }
+};
 
 export const excluirUsuarioController = async (req, res) => {
     try {

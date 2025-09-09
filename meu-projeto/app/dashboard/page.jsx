@@ -176,8 +176,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#084438] to-green-700">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-r from-[#084438] to-green-700 -m-4 lg:-m-6 p-4 lg:p-6">
+      <div className="container mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>

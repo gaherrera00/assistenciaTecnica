@@ -1,7 +1,7 @@
 import Link from "next/link";
 export default function Home() {
   return (
-    <main className="bg-secondary text-black">
+    <main className="bg-secondary text-black -m-4 lg:-m-6">
       {/* HERO */}
       <section className="relative min-h-screen flex items-center ">
         {/* Vídeo de fundo */}

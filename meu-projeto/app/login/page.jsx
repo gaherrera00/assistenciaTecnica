@@ -12,23 +12,78 @@ import {
   EyeOff,
   Loader2,
 } from "lucide-react";
+import { setAuthToken, setUser } from "@/utils/auth";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function LoginPage() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const togglePassword = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // Simula processo de login
-    setTimeout(() => {
+    try {
+      // Define a URL da API - usa variável de ambiente ou fallback
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      
+      const response = await axios.post(
+        `${apiUrl}/usuario/login`,
+        { email, senha },
+        {
+          timeout: 10000, // 10 segundos de timeout
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const { token, user } = response.data;
+
+      // Salva token e usuário no localStorage
+      setAuthToken(token);
+      setUser(user);
+
+      // Redireciona para o dashboard
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Erro ao fazer login:", err);
+      
+      // Tratamento mais específico de erros
+      if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
+        setError("Não foi possível conectar com o servidor. Verifique se o backend está rodando na porta 3001.");
+      } else if (err.response) {
+        // Erro da API
+        const status = err.response.status;
+        const message = err.response.data?.mensagem || err.response.data?.message;
+        
+        if (status === 500) {
+          setError("Erro interno do servidor. Verifique se o banco de dados está conectado.");
+        } else if (status === 401) {
+          setError("Email ou senha incorretos.");
+        } else if (message) {
+          setError(message);
+        } else {
+          setError(`Erro ${status}: Falha na comunicação com o servidor.`);
+        }
+      } else if (err.request) {
+        setError("Sem resposta do servidor. Verifique sua conexão de internet.");
+      } else {
+        setError("Ocorreu um erro inesperado. Tente novamente.");
+      }
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -46,33 +101,31 @@ export default function LoginPage() {
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex font-inter">
-        {/* Lado Esquerdo - Branding e Funcionalidades */}
+        {/* Lado Esquerdo - Branding */}
         <div className="hidden lg:flex lg:w-1/2 bg-green-700 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-green-700 to-green-900"></div>
 
-          {/* Elementos Decorativos */}
+          {/* Elementos decorativos */}
           <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full"></div>
           <div className="absolute top-40 right-32 w-24 h-24 bg-sky-400/20 rounded-full"></div>
           <div className="absolute bottom-32 left-32 w-20 h-20 bg-white/15 rounded-full"></div>
           <div className="absolute bottom-20 right-20 w-16 h-16 bg-sky-400/25 rounded-full"></div>
 
           <div className="relative z-10 flex flex-col justify-center items-start px-16 py-20">
-            <div className="mb-12">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-                  <Ticket className="text-green-700 text-xl" />
-                </div>
-                <div>
-                  <h1 className="text-white text-3xl font-bold">Zelos</h1>
-                  <p className="text-green-200 text-sm">
-                    Plataforma de Chamados SENAI
-                  </p>
-                </div>
+            <div className="mb-12 flex items-center space-x-3">
+              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
+                <Ticket className="text-green-700 text-xl" />
+              </div>
+              <div>
+                <h1 className="text-white text-3xl font-bold">Zelos</h1>
+                <p className="text-green-200 text-sm">
+                  Plataforma de Chamados SENAI
+                </p>
               </div>
             </div>
 
             <div className="space-y-8">
-              {/* Gerenciamento de Usuários */}
+              {/* Funcionalidades */}
               <div className="flex items-start space-x-4">
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Users className="text-white text-sm" />
@@ -83,12 +136,11 @@ export default function LoginPage() {
                   </h3>
                   <p className="text-green-200 text-sm leading-relaxed">
                     Cadastre alunos e técnicos, organize permissões e controle
-                    o acesso ao sistema de chamados.
+                    o acesso ao sistema.
                   </p>
                 </div>
               </div>
 
-              {/* Abertura de Chamados */}
               <div className="flex items-start space-x-4">
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Ticket className="text-white text-sm" />
@@ -104,7 +156,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Atendimento Técnico */}
               <div className="flex items-start space-x-4">
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Wrench className="text-white text-sm" />
@@ -120,7 +171,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Apontamentos Técnicos */}
               <div className="flex items-start space-x-4">
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                   <ClipboardList className="text-white text-sm" />
@@ -139,10 +189,10 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Lado Direito - Formulário de Login */}
+        {/* Lado Direito - Formulário */}
         <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-8 py-12">
           <div className="w-full max-w-md">
-            {/* Logo Mobile */}
+            {/* Logo mobile */}
             <div className="lg:hidden flex justify-center items-center mb-8">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center">
@@ -166,6 +216,10 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {error && (
+              <p className="text-red-500 mb-4 text-center">{error}</p>
+            )}
+
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
@@ -182,6 +236,8 @@ export default function LoginPage() {
                     placeholder="Digite seu e-mail"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-500"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <Mail className="text-gray-400 text-sm" />
@@ -206,6 +262,8 @@ export default function LoginPage() {
                     placeholder="Digite sua senha"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-500"
                     required
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
                   />
                   <button
                     type="button"

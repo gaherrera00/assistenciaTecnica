@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "./components/navbar/page.jsx"; 
 import Footer from "./components/Footer/page.jsx";
+import ConditionalLayout from "./components/ConditionalLayout";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,13 +22,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-br">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className="flex min-h-screen">
-          <Navbar />
-          <main className="flex-1 ml-64">
-            {children}
-            <Footer />
-          </main>
-        </div>
+        <ConditionalLayout navbar={<Navbar />} footer={<Footer />}>
+          {children}
+        </ConditionalLayout>
       </body>
     </html>
   );

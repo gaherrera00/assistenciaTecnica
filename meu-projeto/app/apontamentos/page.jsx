@@ -69,7 +69,7 @@ export default function Apontamentos() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 mt-20">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
           <div className="mb-6 text-center">
             <img
