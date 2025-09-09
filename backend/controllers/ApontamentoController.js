@@ -1,9 +1,8 @@
-import { listarApontamentos, obterApontamentoPorId, criarApontamento, excluirApontamento } from '../models/apontamentos.js';
-import { read } from '../config/database.js';
+import { listarApontamentos, obterApontamentoPorId, criarApontamento } from '../models/apontamentos.js';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 
-const listarApontamentosController = async (req, res) => {
+export const listarApontamentosController = async (req, res) => {
     try {
         const apontamentos = await listarApontamentos();
         res.status(200).json(apontamentos);
@@ -13,7 +12,7 @@ const listarApontamentosController = async (req, res) => {
     }
 };
 
-const obterApontamentoPorIdController = async (req, res) => {
+export const obterApontamentoPorIdController = async (req, res) => {
     try {
         const id = req.params.id;
         const apontamentos = await obterApontamentoPorId(id);
@@ -24,74 +23,52 @@ const obterApontamentoPorIdController = async (req, res) => {
     }
 };
 
-const criarApontamentoController = async (req, res) => {
+export const criarApontamentoController = async (req, res) => {
     try {
-        const { id_chamado, id_tecnico, descricao, comeco, fim, duracao, criado_em } = req.body;
-
-        const verificarChamado = await read('chamados', `id_chamado = '${id_chamado}'`);
-        if (!verificarChamado || verificarChamado.length === 0) {
-            return res.status(400).json({ mensagem: "Chamado inexistente." });
-        }
-
-        const verificarUsuario = await read('usuarios', `id_usuario = '${id_tecnico}' AND funcao = 'tecnico'`);
-        if (!verificarUsuario || verificarUsuario.length === 0) {
-            return res.status(400).json({ mensagem: "Usuário informado não é um técnico válido." });
-        }
+        const { descricao } = req.body;
+        const id_chamado = req.params.id_chamado;
+        const id_tecnico = req.user.id;
 
         const apontamentoData = {
             id_chamado: id_chamado,
             id_tecnico: id_tecnico,
-            descricao: descricao,
-            comeco: comeco,
-            fim: fim,
-            duracao: duracao,
-            criado_em: criado_em
+            descricao: descricao
         }
 
         const apontamentoId = await criarApontamento(apontamentoData);
+        res.status(201).json({ mensagem: "Apontamento criado com sucesso.", apontamentoId });
 
-    // 5) Recupera o apontamento recém-criado
-    const apontamento = await obterApontamentoPorId(apontamentoId);
+    //     const apontamentoId = await criarApontamento(apontamentoData);
 
-    // 6) Gera o PDF com os dados do apontamento
-    const doc = new PDFDocument({ margin: 30 });
+    // // 5) Recupera o apontamento recém-criado
+    // const apontamento = await obterApontamentoPorId(apontamentoId);
 
-    // Configura headers para download
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=apontamento_${apontamentoId}.pdf`);
+    // // 6) Gera o PDF com os dados do apontamento
+    // const doc = new PDFDocument({ margin: 30 });
 
-    doc.pipe(res);
+    // // Configura headers para download
+    // res.setHeader('Content-Type', 'application/pdf');
+    // res.setHeader('Content-Disposition', `attachment; filename=apontamento_${apontamentoId}.pdf`);
 
-    doc.fontSize(18).text('Relatório de Apontamento', { align: 'center' });
-    doc.moveDown();
+    // doc.pipe(res);
 
-    doc.fontSize(14).text(`ID do Apontamento: ${apontamento.id_apontamentos}`);
-    doc.text(`ID do Chamado: ${apontamento.id_chamado}`);
-    doc.text(`ID do Técnico: ${apontamento.id_tecnico}`);
-    doc.moveDown(0.5);
+    // doc.fontSize(18).text('Relatório de Apontamento', { align: 'center' });
+    // doc.moveDown();
 
-    doc.fontSize(14).text(`Descrição: ${apontamento.descricao}`);
-    doc.text(`Início: ${apontamento.comeco}`);
-    doc.text(`Fim: ${apontamento.fim}`);
-    if (apontamento.duracao) doc.text(`Duração (s): ${apontamento.duracao}`);
-    if (apontamento.criado_em) doc.text(`Criado em: ${apontamento.criado_em}`);
+    // doc.fontSize(14).text(`ID do Apontamento: ${apontamento.id_apontamentos}`);
+    // doc.text(`ID do Chamado: ${apontamento.id_chamado}`);
+    // doc.text(`ID do Técnico: ${apontamento.id_tecnico}`);
+    // doc.moveDown(0.5);
 
-    doc.end();
+    // doc.fontSize(14).text(`Descrição: ${apontamento.descricao}`);
+    // doc.text(`Início: ${apontamento.comeco}`);
+    // doc.text(`Fim: ${apontamento.fim}`);
+    // if (apontamento.duracao) doc.text(`Duração (s): ${apontamento.duracao}`);
+    // if (apontamento.criado_em) doc.text(`Criado em: ${apontamento.criado_em}`);
+
+    // doc.end();
     } catch (err) {
         console.error('Erro ao criar apontamentos: ', err);
         res.status(500).json({ mensagem: 'Erro ao criar apontamentos.' });
     }
 };
-
-const excluirApontamentoController = async (req, res) => {
-    try {
-        const apontamentoId = req.params.id;
-        await excluirApontamento(apontamentoId);
-        res.status(200).json({ mensagem: 'Apontamento excluido com sucesso.' });
-    } catch (err) {
-        console.error('Erro ao excluir apontamento: ', err);
-        res.status(500).json({ mensagem: 'Erro ao excluir apontamento.' });
-    }
-}
-
-export { listarApontamentosController, obterApontamentoPorIdController, criarApontamentoController, excluirApontamentoController };

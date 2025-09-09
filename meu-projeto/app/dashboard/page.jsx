@@ -149,7 +149,7 @@ export default function Dashboard() {
   };
 
   console.log(chamados);
-  
+
 
   if (loading) {
     return (
@@ -176,8 +176,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#084438] to-green-700">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-r from-[#084438] to-green-700 -m-4 lg:-m-6 p-4 lg:p-6">
+      <div className="container mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -196,10 +196,10 @@ export default function Dashboard() {
             )}
             {(user?.funcao === "tecnico" ||
               user?.funcao === "administrador") && (
-              <p className="text-green-200 text-sm mt-1">
-                Visualizando todos os chamados do sistema
-              </p>
-            )}
+                <p className="text-green-200 text-sm mt-1">
+                  Visualizando todos os chamados do sistema
+                </p>
+              )}
           </div>
           <p className="text-black-100 mt-2">
             Total de chamados: {chamados.length}
@@ -318,19 +318,10 @@ export default function Dashboard() {
                           Nome
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Sala
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Patrimônio
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Sintoma
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Detalhes
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Início
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Frequência
@@ -391,11 +382,10 @@ export default function Dashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
-                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                chamado.frequencia === "Recorrente"
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${chamado.frequencia === "Recorrente"
                                   ? "bg-red-100 text-red-800"
                                   : "bg-gray-100 text-gray-800"
-                              }`}
+                                }`}
                             >
                               {chamado.frequencia || "Primeira vez"}
                             </span>
@@ -507,25 +497,13 @@ export default function Dashboard() {
                           Nome
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          RA
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Sala
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Turma
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Sintoma
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Status
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Frequência
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Início
+                          Detalhes
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Criado em
@@ -574,11 +552,10 @@ export default function Dashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
-                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                chamado.frequencia === "Recorrente"
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${chamado.frequencia === "Recorrente"
                                   ? "bg-red-100 text-red-800"
                                   : "bg-gray-100 text-gray-800"
-                              }`}
+                                }`}
                             >
                               {chamado.frequencia || "Primeira vez"}
                             </span>
