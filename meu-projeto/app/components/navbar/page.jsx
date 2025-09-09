@@ -36,7 +36,7 @@ export default function Navbar({ user }) {
               <Users className="w-5 h-5" /> Gerenciar Usuários
             </Link>
             <Link href="/chamadosEnviados" className="flex items-center gap-1 px-3 py-2 rounded hover:bg-green-800 transition-colors">
-              <Ticket className="w-5 h-5" /> Chamados Enviados
+              <Ticket className="w-5 h-5" /> Chamados
             </Link>
             <Link href="/apontamentos" className="flex items-center gap-1 px-3 py-2 rounded hover:bg-green-800 transition-colors">
               <FileText className="w-5 h-5" /> Apontamentos
@@ -77,7 +77,7 @@ export default function Navbar({ user }) {
           <Link href="/" className="block px-4 py-2 hover:bg-green-800 transition-colors">Início</Link>
           <Link href="/dashboard" className="block px-4 py-2 hover:bg-green-800 transition-colors">Dashboard</Link>
           <Link href="/gerenUser" className="block px-4 py-2 hover:bg-green-800 transition-colors">Gerenciar Usuários</Link>
-          <Link href="/chamadosEnviados" className="block px-4 py-2 hover:bg-green-800 transition-colors">Chamados Enviados</Link>
+          <Link href="/chamadosEnviados" className="block px-4 py-2 hover:bg-green-800 transition-colors">Chamados</Link>
           <Link href="/apontamentos" className="block px-4 py-2 hover:bg-green-800 transition-colors">Apontamentos</Link>
           <Link href="/sobre" className="block px-4 py-2 hover:bg-green-800 transition-colors">Sobre</Link>
           <Link href="/perfil" className="block px-4 py-2 mt-2 bg-green-700 hover:bg-green-600 rounded transition-colors">

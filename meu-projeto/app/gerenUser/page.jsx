@@ -77,75 +77,76 @@ export default function GerenUser() {
   );
 
   return (
-    <div className="min-h-screen">
-      {/* Cabeçalho */}
-      <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={handleAddUser}
-          className="bg-green-900 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Adicionar Usuário
-        </button>
-        <input
-          type="text"
-          placeholder="Pesquisar usuários..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 text-gray-800 placeholder-gray-600"
-        />
-      </div>
+    <div className="min-h-screen pt-24 p-6 bg-gray-50 flex flex-col">
+  {/* Cabeçalho */}
+  <div className="flex justify-between items-center mb-4">
+    <button
+      onClick={handleAddUser}
+      className="bg-green-900 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center"
+    >
+      <Plus className="w-5 h-5 mr-2" />
+      Adicionar Usuário
+    </button>
+    <input
+      type="text"
+      placeholder="Pesquisar usuários..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 text-gray-800 placeholder-gray-600"
+    />
+  </div>
 
-      {/* Tabela de usuários */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 sticky top-0">
-            <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nome</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Email</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Função</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ações</th>
+  {/* Tabela de usuários */}
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto flex-1">
+    <table className="w-full">
+      <thead className="bg-gray-50 sticky top-0">
+        <tr>
+          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Nome</th>
+          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Email</th>
+          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Função</th>
+          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Ações</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-gray-200">
+        {filteredUsers.length === 0 ? (
+          <tr>
+            <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+              Nenhum usuário encontrado
+            </td>
+          </tr>
+        ) : (
+          filteredUsers.map((user) => (
+            <tr key={user.id_usuario} className="hover:bg-gray-50">
+              <td className="px-6 py-4 text-sm font-medium text-gray-900">{user.nome}</td>
+              <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+              <td className="px-6 py-4 text-sm text-gray-600">{user.funcao}</td>
+              <td className="px-6 py-4">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={user.status === "ativo"}
+                    onChange={() => handleStatusChange(user)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-900"></div>
+                </label>
+              </td>
+              <td className="px-6 py-4">
+                <button
+                  onClick={() => handleDelete(user.id_usuario)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredUsers.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                  Nenhum usuário encontrado
-                </td>
-              </tr>
-            ) : (
-              filteredUsers.map((user) => (
-                <tr key={user.id_usuario} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{user.nome}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{user.funcao}</td>
-                  <td className="px-6 py-4">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={user.status === "ativo"}
-                        onChange={() => handleStatusChange(user)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-900"></div>
-                    </label>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => handleDelete(user.id_usuario)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
+
   );
 }
