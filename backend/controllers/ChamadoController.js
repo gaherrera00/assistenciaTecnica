@@ -60,6 +60,7 @@ export const criarChamadoController = async (req, res) => {
             id_pool: id_pool ?? null,
             criado_por: req.user.id
         };
+        console.log(chamadoData);
 
         const chamadoId = await criarChamado(chamadoData);
         res.status(201).json({ mensagem: 'Chamado criado com sucesso.', chamadoId });

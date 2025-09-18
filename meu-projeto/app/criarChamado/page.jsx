@@ -4,7 +4,7 @@ import { useState } from "react";
 export default function CriarChamado() {
   const [nome, setNome] = useState("");
   const [detalhes, setDetalhes] = useState("");
-  const [pool, setPool] = useState("manutencao");
+  const [idPool, setIdPool] = useState("1"); // default: manutenção
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -22,16 +22,16 @@ export default function CriarChamado() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` })
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: JSON.stringify({ nome, detalhes, pool }),
+        body: JSON.stringify({ nome, detalhes, id_pool: idPool }), // 👈 agora envia id_pool
       });
 
       if (response.ok) {
         setSuccess("Chamado criado com sucesso!");
         setNome("");
         setDetalhes("");
-        setPool("manutencao");
+        setIdPool("1"); // resetar para manutenção
       } else {
         setError("Erro ao criar chamado");
       }
@@ -65,14 +65,14 @@ export default function CriarChamado() {
           required
         />
         <select
-          value={pool}
-          onChange={(e) => setPool(e.target.value)}
+          value={idPool}
+          onChange={(e) => setIdPool(e.target.value)}
           className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
-          <option value="manutencao">Manutenção</option>
-          <option value="externo">Externo</option>
-          <option value="apoio_tecnico">Apoio Técnico</option>
-          <option value="limpeza">Limpeza</option>
+          <option value="1">Manutenção</option>
+          <option value="2">Externo</option>
+          <option value="3">Apoio Técnico</option>
+          <option value="4">Limpeza</option>
         </select>
         <button
           type="submit"
@@ -85,4 +85,3 @@ export default function CriarChamado() {
     </section>
   );
 }
-
